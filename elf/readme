@@ -1,0 +1,4 @@
+What is a off_t?
+
+by my understanding its supposed to be a standard var type for file sizes.
+its supposed to be able to change depending on computer arch

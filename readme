@@ -1,0 +1,16 @@
+asm cheatsheet
+
+Registers:
+
+rax: used for syscall numbers
+
+rdi, rsi, rdx, r10, r8, and r9: syscall params
+
+Operations:
+
+	Jump:   usually come after a cmp
+		jg: jump if greater
+		jge: jump if greater or equal
+		jl: jump if less than
+		jle: jump if less or equal
+		j
