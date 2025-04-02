@@ -57,15 +57,16 @@ void	ft_print_hex(char c)
 
 void	print_header(char *map, int size)
 {
+	write(1, "made\n", 5);
 	for (int i = 0 ; i < size ; i++)
 	{
-		if (!ft_isprint(map[i]))
-		{
+		//if (!ft_isprint(map[i]))
+		//{
 			ft_print_hex(map[i]);
 			write(1, " ", 1);
-		}
-		else
-			write(1, &map[i], 1);
+		//}
+		//else
+		//	write(1, &map[i], 1);
 	}
 }
 
@@ -78,7 +79,7 @@ void	iterate_sheaders(void *map, Elf64_Ehdr *eheader)
 	print_header(map + sheader[str_ind].sh_offset, sheader[str_ind].sh_size);
 }
 
-int get_text_section(void *map, Elf64_Ehdr *eheader)
+int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 {
 	int	section_nbr = eheader->e_shnum;
 	Elf64_Shdr *shdrs = (Elf64_Shdr *)(map + eheader->e_shoff);
@@ -105,11 +106,14 @@ int main(void)
 
 	print_header(map, 64);
 	Elf64_Ehdr	*header = (Elf64_Ehdr *)map;
-	Elf64_Shdr	*section_headers;
+	Elf64_Shdr	*section_headers = (Elf64_Shdr *)(map + header->e_shoff);
 
 	int	sheader_nbr = header->e_shnum;
 	int sheader_size = header->e_shentsize;
 
-	int text_ind = get_text_section(map, header);
-	printf("the text section index is %d\n", text_ind);	
+
+	int text_ind = get_text_section_index(map, header);
+	Elf64_Shdr	*text_sheader = (Elf64_Shdr *)&section_headers[text_ind];
+	printf("text section offset [%p] and size [%d]\n", text_sheader->sh_offset, text_sheader->sh_size);
+	print_header((map + text_sheader->sh_offset), text_sheader->sh_size);
 }

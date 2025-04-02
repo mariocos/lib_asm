@@ -2,3 +2,39 @@ What is a off_t?
 
 by my understanding its supposed to be a standard var type for file sizes.
 its supposed to be able to change depending on computer arch
+
+/* How to find the .text section */
+ok so its kinda hard to explain this because the file format is quite complex,
+I sugest you read the wikepedia page on the elf file format and also do some extra research first.
+
+The first thing we need to do is to parse the Elf file Header.
+
+	this is a 64 byte long header with alot of information. for this part we need mainly two things out 
+	of this header: the e_shoff (elf section header offset) and the e_shstrndx (section header string table index).
+	the e_shoff is pretty simple to understand, it points to the start of the section headers in the file.
+	the e_shstrndx is a bit more complicated to understand. so what is it
+
+		the key concepts to understanding this part is that the section headers are placed together in a 
+		kind of array where each header is 64 bytes long. they are not stored in any particular order and
+		they do not hold their own name, instead they have a index to their respective entry in the 
+		section header string table.
+
+	So to find out wich section header belongs to wich section we need to do some detective work.
+
+		first we locate the section header string table header by using the e_shstrndx value in the elf header
+		then we go into this entry in the section header array and find the location in the file where theese
+		strings are located.
+		after this we can parse through the section headers and analise theyre respective entry to the string table
+		to find its name.
+
+By doing this we now have alot of valuable information.
+	-Elf header.
+	-elf section header array.
+	-section header string table.
+
+with this we can find any section we desire.
+/*****/
+
+i am now trying to figure out how to insert code into the .text section.
+
+i still canot read opcodes so i need to create a tool for this.
