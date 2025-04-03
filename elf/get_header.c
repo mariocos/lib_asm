@@ -49,7 +49,7 @@ int	ft_isprint(int c)
 	return (1);
 }
 
-void	ft_print_hex(char c)
+void	ft_print_hex(unsigned char c)
 {
 	write(1, &"0123456789abcdef"[c / 16], 1);
 	write(1, &"0123456789abcdef"[c % 16], 1);
@@ -60,13 +60,9 @@ void	print_header(char *map, int size)
 	write(1, "made\n", 5);
 	for (int i = 0 ; i < size ; i++)
 	{
-		//if (!ft_isprint(map[i]))
-		//{
-			ft_print_hex(map[i]);
-			write(1, " ", 1);
-		//}
-		//else
-		//	write(1, &map[i], 1);
+		write(1, "0x", 2);
+		ft_print_hex(map[i]);
+		write(1, ", ", 2);
 	}
 }
 
@@ -100,9 +96,11 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 	return (-1);
 }
 
+unsigned char shellcode[] = {0xbb, 0x00, 0x00, 0x00, 0x00, 0xb9, 0x00, 0x00, 0x00, 0x00, 0x48, 0x83, 0xfb, 0x0a, 0x7f, 0x0e, 0x48, 0x83, 0xc3, 0x01, 0x48, 0x83, 0xc1, 0x02, 0x48, 0x83, 0xfb, 0x0a, 0x7c, 0xec, 0xb8, 0x3c, 0x00, 0x00, 0x00, 0x48, 0x89, 0xcf, 0x0f, 0x05};
+
 int main(void)
 {
-	void *map = get_map("Hello_world");
+	void *map = get_map("skip");
 
 	print_header(map, 64);
 	Elf64_Ehdr	*header = (Elf64_Ehdr *)map;
