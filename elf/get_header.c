@@ -96,7 +96,10 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 	return (-1);
 }
 
-unsigned char shellcode[] = {0xbb, 0x00, 0x00, 0x00, 0x00, 0xb9, 0x00, 0x00, 0x00, 0x00, 0x48, 0x83, 0xfb, 0x0a, 0x7f, 0x0e, 0x48, 0x83, 0xc3, 0x01, 0x48, 0x83, 0xc1, 0x02, 0x48, 0x83, 0xfb, 0x0a, 0x7c, 0xec, 0xb8, 0x3c, 0x00, 0x00, 0x00, 0x48, 0x89, 0xcf, 0x0f, 0x05};
+unsigned char shellcode[] = {0xbb, 0x00, 0x00, 0x00, 0x00, 0xb9, 0x00, 0x00, 0x00, 0x00, 0x48,\
+				0x83, 0xfb, 0x0a, 0x7f, 0x0e, 0x48, 0x83, 0xc3, 0x01, 0x48, 0x83, 0xc1, 0x02, \
+				0x48, 0x83, 0xfb, 0x0a, 0x7c, 0xec, 0xb8, 0x3c, 0x00, 0x00, 0x00, 0x48, 0x89, \
+				0xcf, 0x0f, 0x05};
 
 int main(void)
 {
@@ -113,5 +116,17 @@ int main(void)
 	int text_ind = get_text_section_index(map, header);
 	Elf64_Shdr	*text_sheader = (Elf64_Shdr *)&section_headers[text_ind];
 	printf("text section offset [%p] and size [%d]\n", text_sheader->sh_offset, text_sheader->sh_size);
+
+	Elf64_Addr	entry_point = header->e_entry; // get entry-point of elf, aka where code starts to run
 	print_header((map + text_sheader->sh_offset), text_sheader->sh_size);
+	printf("Original entry point: 0x%lx\n", original_entry); // testing just to make sure it can be found
+	/* 
+	TODO: check to see if there is at least 100bytes of free space after the section header
+	printf(".text file offset: 0x%lx\n", text_sheader->sh_offset);
+	printf(".text virtual address: 0x%lx\n", text_sheader->sh_addr);
+	printf(".text size: 0x%x\n", text_sheader->sh_size);
+	*/
+	Elf64_Shdr next_section = section_headers[text_ind + 1]; // (not sure about this naming?)
+	size_t space = next.sh_offset - (text_sheader->sh_offset + text_sheader->sh_size);
+	printf("Available padding after .text: %lu bytes\n", space);
 }
