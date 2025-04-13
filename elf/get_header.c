@@ -117,6 +117,7 @@ int main(void)
 	Elf64_Shdr	*text_sheader = (Elf64_Shdr *)&section_headers[text_ind];
 	printf("text section offset [%p] and size [%d]\n", text_sheader->sh_offset, text_sheader->sh_size);
 
+	// untested
 	Elf64_Addr	entry_point = header->e_entry; // get entry-point of elf, aka where code starts to run
 	print_header((map + text_sheader->sh_offset), text_sheader->sh_size);
 	printf("Original entry point: 0x%lx\n", original_entry); // testing just to make sure it can be found
