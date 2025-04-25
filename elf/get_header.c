@@ -103,7 +103,7 @@ unsigned char shellcode[] = {0xbb, 0x00, 0x00, 0x00, 0x00, 0xb9, 0x00, 0x00, 0x0
 
 int main(void)
 {
-	void *map = get_map("skip");
+	void *map = get_map("a.out");
 
 	print_header(map, 64);
 	Elf64_Ehdr	*header = (Elf64_Ehdr *)map;
