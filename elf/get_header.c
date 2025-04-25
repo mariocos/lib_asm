@@ -178,6 +178,7 @@ void *append_shellcode(char *str)
 
 	size_t new_size = aligned_offset + sizeof(shellcode);
 
+	printf("text section1");
 	// MAP_SHARED will edit the actual file and not just a copy of it
 	void	*new_map = mmap(NULL, new_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); 
 	if (new_map == MAP_FAILED)
@@ -186,7 +187,9 @@ void *append_shellcode(char *str)
 		close(fd);
 		return (NULL);
 	}
+	printf("text section2");
 	memcpy(new_map + aligned_offset, shellcode, sizeof(shellcode));
+	printf("text section3");
 	update_elf(new_map, aligned_offset, fd);
 	close(fd);
 	return (new_map);
