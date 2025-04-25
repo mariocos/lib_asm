@@ -117,7 +117,7 @@ int main(void)
 	Elf64_Shdr	*text_sheader = (Elf64_Shdr *)&section_headers[text_ind];
 	printf("text section offset [%p] and size [%d]\n", text_sheader->sh_offset, text_sheader->sh_size);
 
-	// untested
+	// vera shenanigans
 	Elf64_Addr	entry_point = header->e_entry; // get entry-point of elf, aka where code starts to run
 	print_header((map + text_sheader->sh_offset), text_sheader->sh_size);
 	printf("Original entry point: 0x%lx\n", entry_point); // testing just to make sure it can be found
@@ -132,6 +132,7 @@ int main(void)
 	printf("Available padding after .text: %lu bytes\n", space);
 
 	// checkers to see if the file has been stripped completely (meaning there is no section headers)
+	// if stuff is at 0 it means it has been stripped, otherwise its healthy
 	printf("Section header offset: 0x%lx\n", header->e_shoff);
 	printf("Number of section headers: %d\n", header->e_shnum);
 	printf("Section header string table index: %d\n", header->e_shstrndx);
