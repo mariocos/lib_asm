@@ -138,12 +138,12 @@ int main(void)
 
 	// checker to dump all of the sections and make sure there is no missunderstanding with the .text
 	// this should verify if the index function is working properly
-	Elf64_Shdr *section_headers = (Elf64_Shdr *)(map + header->e_shoff);
-	const char *sh_strtab = map + section_headers[header->e_shstrndx].sh_offset;
+	Elf64_Shdr *section_headers_checkers = (Elf64_Shdr *)(map + header->e_shoff);
+	const char *sh_strtab = map + section_headers_checkers[header->e_shstrndx].sh_offset;
 
 	for (int i = 0; i < header->e_shnum; i++) {
-		const char *name = sh_strtab + section_headers[i].sh_name;
+		const char *name = sh_strtab + section_headers_checkers[i].sh_name;
 		printf("Section [%2d]: %-16s offset: 0x%06lx size: %d\n",
-	    	i, name, section_headers[i].sh_offset, section_headers[i].sh_size);
+	    	i, name, section_headers_checkers[i].sh_offset, section_headers_checkers[i].sh_size);
 }
 }
