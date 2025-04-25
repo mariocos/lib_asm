@@ -10,6 +10,10 @@
 // in-line to align the offset of the new inject code to a 4096 aka 0x1000 usual padding in between sections
 #define ALIGN_UP(x, align) (((x) + ((align)-1)) & ~((align)-1)) //not too sure of whats going on w the ~ tho
 
+#define NEW_SECTION_NAME ".inject"
+
+#define FILE "skip"
+
 unsigned char shellcode[] = {0xbb, 0x00, 0x00, 0x00, 0x00, 0xb9, 0x00, 0x00, 0x00, 0x00, 0x48,\
 	0x83, 0xfb, 0x0a, 0x7f, 0x0e, 0x48, 0x83, 0xc3, 0x01, 0x48, 0x83, 0xc1, 0x02, \
 	0x48, 0x83, 0xfb, 0x0a, 0x7c, 0xec, 0xb8, 0x3c, 0x00, 0x00, 0x00, 0x48, 0x89, \
@@ -33,14 +37,14 @@ void	*get_map(char *str)
 {
 	if (!str)
 		return (NULL);
-	int fd = open(str, O_RDWR);
+	int fd = open(str, O_RDONLY);
 	if (fd < 0)
 	{
 		write(2, "problem opening file\n", 21);
 		return (NULL);
 	}
 	off_t f_size = lseek(fd, 0, SEEK_END);
-	void	*map = mmap(NULL, f_size, PROT_READ, MAP_SHARED, fd, 0); 
+	void	*map = mmap(NULL, f_size, PROT_READ, MAP_PRIVATE, fd, 0); 
 	if (map == MAP_FAILED)
 	{
 		write(2, "problem mapping file\n", 21);
@@ -103,107 +107,7 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 	}
 	return (-1);
 }
-#define NEW_SECTION_NAME ".inject"
 
-
-void update_elf(void *map, size_t aligned_offset, int fd)
-{
-	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
-	Elf64_Shdr *shdr_table = (Elf64_Shdr *)(map + ehdr->e_shoff);
-	
-	size_t shellcode_size = sizeof(shellcode);
-
-	Elf64_Shdr *shdr_strtab = &shdr_table[ehdr->e_shstrndx];
-	char *shstrtab = map + shdr_strtab->sh_offset;
-	Elf64_Word new_name_offset = shdr_strtab->sh_size;
-
-	strcpy(shstrtab + new_name_offset, NEW_SECTION_NAME);
-	shdr_strtab->sh_size += strlen(NEW_SECTION_NAME) + 1;
-
-	Elf64_Shdr injected_section = {0};
-	injected_section.sh_name = new_name_offset; // Offset in new .shstrtab
-	injected_section.sh_type = SHT_PROGBITS;
-	injected_section.sh_flags = SHF_EXECINSTR | SHF_ALLOC;
-	injected_section.sh_offset = aligned_offset; // Where shellcode is injected
-	injected_section.sh_size = shellcode_size;
-
-	// Calculate sh_addr (virtual address)
-	Elf64_Phdr *phdr = (Elf64_Phdr *)(map + ehdr->e_phoff);
-	// This makes sure the shellcode's file offset aligns with where it will be loaded into memory when executed.
-	for (int i = 0; i < ehdr->e_phnum; i++) {
-		if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) {
-			injected_section.sh_addr = phdr[i].p_vaddr + (aligned_offset - phdr[i].p_offset);
-			break;
-		}
-	}
-
-	// Resize the memory map
-	memcpy(map + aligned_offset, shellcode, shellcode_size);
-	
-	// save original entry point
-	Elf64_Addr original_entry = ehdr->e_entry;
-
-	// Update ELF header and Set entry point to the start of the injected code
-	ehdr->e_shoff = aligned_offset + shellcode_size;
-    ehdr->e_entry = injected_section.sh_addr;
-	printf("New entry point set to: 0x%lx\n", ehdr->e_entry);
-
-
-	// update section header
-	Elf64_Shdr *new_shdr_table = (Elf64_Shdr *)(map + ehdr->e_shoff);
-	memcpy(new_shdr_table, shdr_table, ehdr->e_shnum * sizeof(Elf64_Shdr));
-	memcpy(&new_shdr_table[ehdr->e_shnum], &injected_section, sizeof(Elf64_Shdr));
-    ehdr->e_shnum += 1;
-}
-
-/*
-	append_shellcode - takes the name of the file the program is dealing with, opens it,
-		trunscates it to the size of the file + the shellcode it wants to inject and
-		injects said shellcode.
-*/
-
-
-void *append_shellcode(char *str)
-{
-	if (!str)
-		return (NULL);
-	printf("text section0\n");
-	int fd = open(str, O_RDWR);
-	printf("text section10\n");
-	if (fd < 0)
-	{
-		write(2, "problem opening file\n", 21);
-		return (NULL);
-	}
-	off_t f_size = lseek(fd, 0, SEEK_END);
-	printf("text section11\n");
-	size_t aligned_offset = ALIGN_UP(f_size, 0x1000);
-	printf("text section12\n");
-
-	size_t new_size = aligned_offset + sizeof(shellcode) + 5;
-
-	printf("text section1\n");
-	// MAP_SHARED will edit the actual file and not just a copy of it
-	void	*new_map = mmap(NULL, new_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); 
-	if (new_map == MAP_FAILED)
-	{
-		write(2, "problem mapping file\n", 21);
-		close(fd);
-		return (NULL);
-	}
-	printf("text section2\n");
-	printf("aligned_offset = 0x%lx, new_size = 0x%lx, shellcode size = %ld\n", 
-		aligned_offset, new_size, sizeof(shellcode));
-	printf("Shellcode pointer = %p, size = %ld\n", shellcode, sizeof(shellcode));
-/*for (size_t i = 0; i < sizeof(shellcode); i++) {
-    ((unsigned char *)new_map)[aligned_offset + i] = shellcode[i];
-} = nucllear debug*/
-	memcpy(new_map + aligned_offset, shellcode, sizeof(shellcode));
-	printf("text section3v\n");
-	update_elf(new_map, aligned_offset, fd);
-	close(fd);
-	return (new_map);
-}
 
 void	inspection(Elf64_Ehdr *header, Elf64_Shdr *section_headers,  void *map, Elf64_Shdr *text_sheader, int text_ind)
 {
@@ -241,9 +145,49 @@ void	inspection(Elf64_Ehdr *header, Elf64_Shdr *section_headers,  void *map, Elf
 	}
 }
 
+void *create_new_file(void *old_map)
+{
+	int fd = open(str, O_RDONLY);
+	if (fd < 0)
+	{
+		write(2, "problem opening file\n", 21);
+		return (NULL);
+	}
+	off_t f_size = lseek(fd, 0, SEEK_END);
+	size_t new_size = f_size + sizeof(shellcode) + 5;
+
+	int new_fd = open("new_file", O_RDWR | O_CREAT | O_TRUNC, 0777);
+	if (fd < 0)
+	{
+		write(2, "problem creating file\n", 24);
+		return (NULL);
+	}
+
+	if (lseek(new_fd, new_size - 1, SEEK_SET) == -1 || write(new_fd, "", 1) != 1)
+	{
+		perror("extending file");
+		close(new_fd);
+		close(fd);
+		return NULL;
+	}
+
+	void *new_map = mmap(NULL, new_size, PROT_READ | PROT_WRITE, MAP_SHARED, new_fd, 0);
+	if (new_map == MAP_FAILED)
+	{
+		perror("mmap");
+		close(new_fd);
+		free(old_map);
+		return NULL;
+	}
+	memcpy(new_map, old_map, f_size);
+	free(old_map);
+
+	return (new_map);
+}
+
 int main(void)
 {
-	void *map = get_map("skip");
+	void *map = get_map(FILE);
 
 	print_header(map, 64);
 	Elf64_Ehdr	*header = (Elf64_Ehdr *)map;
@@ -260,7 +204,7 @@ int main(void)
 	// vera shenanigans
 	inspection(header, section_headers, map, text_sheader, text_ind);
 	printf("bro wtf is going on\n");
-	void *new_map = append_shellcode("skip");
+	create_new_file(map);	
 
 	printf("text section");
 	Elf64_Ehdr	*new_header = (Elf64_Ehdr *)new_map;
