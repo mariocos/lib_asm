@@ -130,4 +130,20 @@ int main(void)
 	printf(".text size: 0x%x\n", text_sheader->sh_size);
 	size_t space = next_section.sh_offset - (text_sheader->sh_offset + text_sheader->sh_size);
 	printf("Available padding after .text: %lu bytes\n", space);
+
+	// checkers to see if the file has been stripped completely (meaning there is no section headers)
+	printf("Section header offset: 0x%lx\n", header->e_shoff);
+	printf("Number of section headers: %d\n", header->e_shnum);
+	printf("Section header string table index: %d\n", header->e_shstrndx);
+
+	// checker to dump all of the sections and make sure there is no missunderstanding with the .text
+	// this should verify if the index function is working properly
+	Elf64_Shdr *section_headers = (Elf64_Shdr *)(map + header->e_shoff);
+	const char *sh_strtab = map + section_headers[header->e_shstrndx].sh_offset;
+
+	for (int i = 0; i < header->e_shnum; i++) {
+		const char *name = sh_strtab + section_headers[i].sh_name;
+		printf("Section [%2d]: %-16s offset: 0x%06lx size: %d\n",
+	    	i, name, section_headers[i].sh_offset, section_headers[i].sh_size);
+}
 }
