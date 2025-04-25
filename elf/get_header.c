@@ -145,6 +145,6 @@ int main(void)
 	for (int i = 0; i < header->e_shnum; i++) {
 		const char *name = sh_strtab + section_headers_checkers[i].sh_name;
 		printf("Section [%2d]: %-16s offset: 0x%06lx size: %06d available space: %lu \n",
-	    	i, name, section_headers_checkers[i].sh_offset, section_headers_checkers[i].sh_size, section_headers_checkers[i+1].sh_offset - (section_headers_checkers[i].sh_offset + section_headers_checkers[i].sh_size););
+	    	i, name, section_headers_checkers[i].sh_offset, section_headers_checkers[i].sh_size, section_headers_checkers[i+1].sh_offset - (section_headers_checkers[i].sh_offset + section_headers_checkers[i].sh_size));
 }
 }
