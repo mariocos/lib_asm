@@ -138,7 +138,7 @@ void *append_shellcode(char *str)
 	return (new_map);
 }
 
-void	inspection(Elf64_Ehdr *header, Elf64_Shdr *section_headers,  void *map, Elf64_Shdr *text_sheader)
+void	inspection(Elf64_Ehdr *header, Elf64_Shdr *section_headers,  void *map, Elf64_Shdr *text_sheader, int text_ind)
 {
 	Elf64_Addr	entry_point = header->e_entry; // get entry-point of elf, aka where code starts to run
 	print_header((map + text_sheader->sh_offset), text_sheader->sh_size);
@@ -191,5 +191,5 @@ int main(void)
 	printf("text section offset [%p] and size [%d]\n", text_sheader->sh_offset, text_sheader->sh_size);
 
 	// vera shenanigans
-	
+	inspection(header, section_headers, map, text_sheader, text_ind);
 }
