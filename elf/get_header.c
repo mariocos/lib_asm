@@ -248,6 +248,7 @@ int main(void)
 	inspection(header, section_headers, map, text_sheader, text_ind);
 	void *new_map = append_shellcode("skip");
 
+	printf("text section");
 	Elf64_Ehdr	*new_header = (Elf64_Ehdr *)new_map;
 	Elf64_Shdr	*new_section_headers = (Elf64_Shdr *)(new_map + new_header->e_shoff);
 
