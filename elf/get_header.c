@@ -167,14 +167,18 @@ void *append_shellcode(char *str)
 {
 	if (!str)
 		return (NULL);
+	printf("text section0");
 	int fd = open(str, O_RDWR);
+	printf("text section10");
 	if (fd < 0)
 	{
 		write(2, "problem opening file\n", 21);
 		return (NULL);
 	}
 	off_t f_size = lseek(fd, 0, SEEK_END);
+	printf("text section11");
 	size_t aligned_offset = ALIGN_UP(f_size, 0x1000);
+	printf("text section12");
 
 	size_t new_size = aligned_offset + sizeof(shellcode);
 
