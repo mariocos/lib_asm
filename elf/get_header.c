@@ -147,7 +147,7 @@ void	inspection(Elf64_Ehdr *header, Elf64_Shdr *section_headers,  void *map, Elf
 
 void *create_new_file(void *old_map)
 {
-	int fd = open(str, O_RDONLY);
+	int fd = open(FILE, O_RDONLY);
 	if (fd < 0)
 	{
 		write(2, "problem opening file\n", 21);
@@ -204,7 +204,7 @@ int main(void)
 	// vera shenanigans
 	inspection(header, section_headers, map, text_sheader, text_ind);
 	printf("bro wtf is going on\n");
-	create_new_file(map);	
+	void new_map = create_new_file(map);	
 
 	printf("text section");
 	Elf64_Ehdr	*new_header = (Elf64_Ehdr *)new_map;
