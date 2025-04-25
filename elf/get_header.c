@@ -7,6 +7,9 @@
 #include <unistd.h>
 #include <string.h>
 
+// in-line to align the offset of the new inject code to a 4096 aka 0x1000 usual padding in between sections
+#define ALIGN_UP(x, align) (((x) + ((align)-1)) & ~((align)-1)) //not too sure of whats going on w the ~ tho
+
 unsigned char shellcode[] = {0xbb, 0x00, 0x00, 0x00, 0x00, 0xb9, 0x00, 0x00, 0x00, 0x00, 0x48,\
 	0x83, 0xfb, 0x0a, 0x7f, 0x0e, 0x48, 0x83, 0xc3, 0x01, 0x48, 0x83, 0xc1, 0x02, \
 	0x48, 0x83, 0xfb, 0x0a, 0x7c, 0xec, 0xb8, 0x3c, 0x00, 0x00, 0x00, 0x48, 0x89, \
@@ -102,7 +105,7 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 	return (-1);
 }
 
-void *update_elf(void *map, size_t aligned_offset)
+void *update_elf(void *map, size_t aligned_offset, int fd)
 {
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
 	Elf64_Shdr *shdr_table = (Elf64_Shdr *)(map + ehdr->e_shoff);
@@ -159,8 +162,7 @@ void *update_elf(void *map, size_t aligned_offset)
 		trunscates it to the size of the file + the shellcode it wants to inject and
 		injects said shellcode.
 */
-// in-line to align the offset of the new inject code to a 4096 aka 0x1000 usual padding in between sections
-#define ALIGN_UP(x, align) (((x) + ((align)-1)) & ~((align)-1)) //not too sure of whats going on w the ~ tho
+
 
 void *append_shellcode(char *str)
 {
@@ -187,7 +189,7 @@ void *append_shellcode(char *str)
 		return (NULL);
 	}
 	memcpy(new_map + aligned_offset, shellcode, sizeof(shellcode));
-	update_elf(new_map, aligned_offset);
+	update_elf(new_map, aligned_offset, fd);
 	return (new_map);
 }
 
