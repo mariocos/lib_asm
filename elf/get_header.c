@@ -180,7 +180,7 @@ void *append_shellcode(char *str)
 	size_t aligned_offset = ALIGN_UP(f_size, 0x1000);
 	printf("text section12\n");
 
-	size_t new_size = aligned_offset + sizeof(shellcode);
+	size_t new_size = aligned_offset + sizeof(shellcode) + 5;
 
 	printf("text section1\n");
 	// MAP_SHARED will edit the actual file and not just a copy of it
@@ -192,6 +192,12 @@ void *append_shellcode(char *str)
 		return (NULL);
 	}
 	printf("text section2\n");
+	printf("aligned_offset = 0x%lx, new_size = 0x%lx, shellcode size = %ld\n", 
+		aligned_offset, new_size, sizeof(shellcode));
+	printf("Shellcode pointer = %p, size = %ld\n", shellcode, sizeof(shellcode));
+/*for (size_t i = 0; i < sizeof(shellcode); i++) {
+    ((unsigned char *)new_map)[aligned_offset + i] = shellcode[i];
+} = nucllear debug*/
 	memcpy(new_map + aligned_offset, shellcode, sizeof(shellcode));
 	printf("text section3v\n");
 	update_elf(new_map, aligned_offset, fd);
