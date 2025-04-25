@@ -14,10 +14,20 @@
 
 #define FILE "skip"
 
+#define GET -10 // for get_size
+
 unsigned char shellcode[] = {0xbb, 0x00, 0x00, 0x00, 0x00, 0xb9, 0x00, 0x00, 0x00, 0x00, 0x48,\
 	0x83, 0xfb, 0x0a, 0x7f, 0x0e, 0x48, 0x83, 0xc3, 0x01, 0x48, 0x83, 0xc1, 0x02, \
 	0x48, 0x83, 0xfb, 0x0a, 0x7c, 0xec, 0xb8, 0x3c, 0x00, 0x00, 0x00, 0x48, 0x89, \
 	0xcf, 0x0f, 0x05};
+
+off_t get_size(off_t size) // returns the size of the file if used with GET and sets up the size otherwise
+{
+	static off_t var = 0;
+	if (var != GET)
+		var = size;
+	return var;
+}
 
 int	ft_strcmp(const char *s1, const char *s2)
 {
@@ -154,7 +164,8 @@ void *create_new_file(void *old_map)
 		return (NULL);
 	}
 	off_t f_size = lseek(fd, 0, SEEK_END);
-	size_t new_size = f_size + sizeof(shellcode) + 5;
+	size_t new_size = f_size + sizeof(shellcode) + 65;
+	get_size(new_size);
 
 	int new_fd = open("new_file", O_RDWR | O_CREAT | O_TRUNC, 0777);
 	if (new_fd < 0)
@@ -185,6 +196,51 @@ void *create_new_file(void *old_map)
 	return (new_map);
 }
 
+Elf64_Addr find_next_virtual_address(void *map)
+{
+    Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
+    Elf64_Phdr *phdr = (Elf64_Phdr *)(map + ehdr->e_phoff);
+
+    Elf64_Addr max_vaddr_end = 0;
+	Elf64_Addr seg_end = 0;
+
+    for (int i = 0; i < ehdr->e_phnum; i++) {
+        if (phdr[i].p_type == PT_LOAD) {
+            seg_end = phdr[i].p_vaddr + phdr[i].p_memsz;
+            if (seg_end > max_vaddr_end)
+                max_vaddr_end = seg_end;
+        }
+    }
+
+    // Align to next 0x1000 boundary
+    Elf64_Addr aligned_addr = (max_vaddr_end + 0xFFF) & ~0xFFF;
+    return aligned_addr;
+}
+
+void	inject_new_header(void *map)
+{
+	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
+	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
+
+	printf("This is the size%lu", get_size(GET));
+	off_t shellcode_offset = get_size(GET) - sizeof(shellcode) - 65;
+	memcpy(map + shellcode_offset, shellcode, sizeof(shellcode));
+
+	// this should be sec of map + offset till section headers + number of section headers * size (typically 64 cuz 64ELF)
+	Elf64_Shdr *new_shdr = (Elf64_Shdr *)(map + ehdr->e_shnum + ehdr->e_shoff * ehdr->e_shentsize); 
+	memset(new_shdr, 0, sizeof(Elf64_Shdr));
+
+	new_shdr->sh_name = 0; // We'll skip name setup for now
+	new_shdr->sh_type = SHT_PROGBITS;
+	new_shdr->sh_flags = SHF_ALLOC | SHF_EXECINSTR;
+	new_shdr->sh_offset = shellcode_offset;
+	new_shdr->sh_addr = find_next_virtual_address(map); // calculate from last PT_LOAD
+	new_shdr->sh_size = sizeof(shellcode);
+	new_shdr->sh_addralign = 0x10;
+	ehdr->e_shnum += 1;
+
+}
+
 int main(void)
 {
 	void *map = get_map(FILE);
@@ -203,7 +259,8 @@ int main(void)
 
 	// vera shenanigans
 	inspection(header, section_headers, map, text_sheader, text_ind);
-	void *new_map = create_new_file(map);	
+	void *new_map = create_new_file(map);
+	inject_new_header(new_map);
 
 	printf("text section");
 	Elf64_Ehdr	*new_header = (Elf64_Ehdr *)new_map;
