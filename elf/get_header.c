@@ -7,6 +7,11 @@
 #include <unistd.h>
 #include <string.h>
 
+unsigned char shellcode[] = {0xbb, 0x00, 0x00, 0x00, 0x00, 0xb9, 0x00, 0x00, 0x00, 0x00, 0x48,\
+	0x83, 0xfb, 0x0a, 0x7f, 0x0e, 0x48, 0x83, 0xc3, 0x01, 0x48, 0x83, 0xc1, 0x02, \
+	0x48, 0x83, 0xfb, 0x0a, 0x7c, 0xec, 0xb8, 0x3c, 0x00, 0x00, 0x00, 0x48, 0x89, \
+	0xcf, 0x0f, 0x05};
+
 int	ft_strcmp(const char *s1, const char *s2)
 {
 	if (s1 == NULL || s2 == NULL)
@@ -25,14 +30,15 @@ void	*get_map(char *str)
 {
 	if (!str)
 		return (NULL);
-	int fd = open(str, O_RDONLY);
+	int fd = open(str, O_RDWR);
 	if (fd < 0)
 	{
 		write(2, "problem opening file\n", 21);
 		return (NULL);
 	}
 	off_t f_size = lseek(fd, 0, SEEK_END);
-	void	*map = mmap(NULL, f_size, PROT_READ, MAP_PRIVATE, fd, 0);
+	// MAP_SHARED will edit the actual file and not just a copy of it
+	void	*map = mmap(NULL, f_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); 
 	if (map == MAP_FAILED)
 	{
 		write(2, "problem mapping file\n", 21);
@@ -96,28 +102,44 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 	return (-1);
 }
 
-unsigned char shellcode[] = {0xbb, 0x00, 0x00, 0x00, 0x00, 0xb9, 0x00, 0x00, 0x00, 0x00, 0x48,\
-				0x83, 0xfb, 0x0a, 0x7f, 0x0e, 0x48, 0x83, 0xc3, 0x01, 0x48, 0x83, 0xc1, 0x02, \
-				0x48, 0x83, 0xfb, 0x0a, 0x7c, 0xec, 0xb8, 0x3c, 0x00, 0x00, 0x00, 0x48, 0x89, \
-				0xcf, 0x0f, 0x05};
+/*
+	append_shellcode - takes the name of the file the program is dealing with, opens it,
+		trunscates it to the size of the file + the shellcode it wants to inject and
+		injects said shellcode.
+*/
+// in-line to align the offset of the new inject code to a 4096 aka 0x1000 usual padding in between sections
+#define ALIGN_UP(x, align) (((x) + ((align)-1)) & ~((align)-1)) //not too sure of whats going on w the ~ tho
 
-int main(void)
+void *append_shellcode(char *str)
 {
-	void *map = get_map("skip");
+	if (!str)
+		return (NULL);
+	int fd = open(str, O_RDWR);
+	if (fd < 0)
+	{
+		write(2, "problem opening file\n", 21);
+		return (NULL);
+	}
+	off_t f_size = lseek(fd, 0, SEEK_END);
+	size_t aligned_offset = ALIGN_UP(f_size, 0x1000);
 
-	print_header(map, 64);
-	Elf64_Ehdr	*header = (Elf64_Ehdr *)map;
-	Elf64_Shdr	*section_headers = (Elf64_Shdr *)(map + header->e_shoff);
+	size_t new_size = aligned_offset + sizeof(shellcode);
 
-	int	sheader_nbr = header->e_shnum;
-	int sheader_size = header->e_shentsize;
+	ftruncate(fd, new_size);
+	// MAP_SHARED will edit the actual file and not just a copy of it
+	void	*new_map = mmap(NULL, new_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); 
+	if (new_map == MAP_FAILED)
+	{
+		write(2, "problem mapping file\n", 21);
+		close(fd);
+		return (NULL);
+	}
+	memcpy(new_map + aligned_offset, shellcode, sizeof(shellcode));
+	return (new_map);
+}
 
-
-	int text_ind = get_text_section_index(map, header);
-	Elf64_Shdr	*text_sheader = (Elf64_Shdr *)&section_headers[text_ind];
-	printf("text section offset [%p] and size [%d]\n", text_sheader->sh_offset, text_sheader->sh_size);
-
-	// vera shenanigans
+void	inspection(Elf64_Ehdr *header, Elf64_Shdr *section_headers,  void *map, Elf64_Shdr *text_sheader)
+{
 	Elf64_Addr	entry_point = header->e_entry; // get entry-point of elf, aka where code starts to run
 	print_header((map + text_sheader->sh_offset), text_sheader->sh_size);
 	printf("Original entry point: 0x%lx\n", entry_point); // testing just to make sure it can be found
@@ -150,4 +172,24 @@ int main(void)
 			section_headers_checkers[i+1].sh_offset - (section_headers_checkers[i].sh_offset + \
 				section_headers_checkers[i].sh_size));
 	}
+}
+
+int main(void)
+{
+	void *map = get_map("skip");
+
+	print_header(map, 64);
+	Elf64_Ehdr	*header = (Elf64_Ehdr *)map;
+	Elf64_Shdr	*section_headers = (Elf64_Shdr *)(map + header->e_shoff);
+
+	int	sheader_nbr = header->e_shnum;
+	int sheader_size = header->e_shentsize;
+
+
+	int text_ind = get_text_section_index(map, header);
+	Elf64_Shdr	*text_sheader = (Elf64_Shdr *)&section_headers[text_ind];
+	printf("text section offset [%p] and size [%d]\n", text_sheader->sh_offset, text_sheader->sh_size);
+
+	// vera shenanigans
+	
 }
