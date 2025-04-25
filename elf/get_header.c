@@ -125,7 +125,7 @@ int main(void)
 	TODO: check to see if there is at least 100bytes of free space after the section header
 	*/
 	printf(".text file offset: 0x%lx\n", text_sheader->sh_offset);
-	printf(".text virtual address: 0x%lx\n", text_sheader->sh_addr);
+	printf(".text next section offset: 0x%lx\n", next_section.sh_offset);
 	printf(".text size: 0x%x\n", text_sheader->sh_size);
 	Elf64_Shdr next_section = section_headers[text_ind + 1]; // (not sure about this naming?)
 	size_t space = next_section.sh_offset - (text_sheader->sh_offset + text_sheader->sh_size);
