@@ -102,7 +102,7 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 	return (-1);
 }
 
-void *update_elf(void *map, vsize_t aligned_offset)
+void *update_elf(void *map, size_t aligned_offset)
 {
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
 	Elf64_Shdr *shdr_table = (Elf64_Shdr *)(map + ehdr->e_shoff);
