@@ -120,7 +120,7 @@ int main(void)
 	// untested
 	Elf64_Addr	entry_point = header->e_entry; // get entry-point of elf, aka where code starts to run
 	print_header((map + text_sheader->sh_offset), text_sheader->sh_size);
-	printf("Original entry point: 0x%lx\n", original_entry); // testing just to make sure it can be found
+	printf("Original entry point: 0x%lx\n", entry_point); // testing just to make sure it can be found
 	/* 
 	TODO: check to see if there is at least 100bytes of free space after the section header
 	printf(".text file offset: 0x%lx\n", text_sheader->sh_offset);
@@ -128,6 +128,6 @@ int main(void)
 	printf(".text size: 0x%x\n", text_sheader->sh_size);
 	*/
 	Elf64_Shdr next_section = section_headers[text_ind + 1]; // (not sure about this naming?)
-	size_t space = next.sh_offset - (text_sheader->sh_offset + text_sheader->sh_size);
+	size_t space = next_section.sh_offset - (text_sheader->sh_offset + text_sheader->sh_size);
 	printf("Available padding after .text: %lu bytes\n", space);
 }
