@@ -157,9 +157,9 @@ void *create_new_file(void *old_map)
 	size_t new_size = f_size + sizeof(shellcode) + 5;
 
 	int new_fd = open("new_file", O_RDWR | O_CREAT | O_TRUNC, 0777);
-	if (fd < 0)
+	if (new_fd < 0)
 	{
-		write(2, "problem creating file\n", 24);
+		write(2, "problem creating file\n", 23);
 		return (NULL);
 	}
 
@@ -176,11 +176,11 @@ void *create_new_file(void *old_map)
 	{
 		perror("mmap");
 		close(new_fd);
-		free(old_map);
+		close(fd);
 		return NULL;
 	}
 	memcpy(new_map, old_map, f_size);
-	free(old_map);
+	close(fd);
 
 	return (new_map);
 }
@@ -203,8 +203,7 @@ int main(void)
 
 	// vera shenanigans
 	inspection(header, section_headers, map, text_sheader, text_ind);
-	printf("bro wtf is going on\n");
-	void new_map = create_new_file(map);	
+	void *new_map = create_new_file(map);	
 
 	printf("text section");
 	Elf64_Ehdr	*new_header = (Elf64_Ehdr *)new_map;
