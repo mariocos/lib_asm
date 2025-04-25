@@ -141,10 +141,11 @@ int main(void)
 	// this should verify if the index function is working properly
 	Elf64_Shdr *section_headers_checkers = (Elf64_Shdr *)(map + header->e_shoff);
 	const char *sh_strtab = map + section_headers_checkers[header->e_shstrndx].sh_offset;
+	const char *name = NULL;
 
 	for (int i = 0; i < header->e_shnum; i++) {
-		const char *name = sh_strtab + section_headers_checkers[i].sh_name;
+		name = sh_strtab + section_headers_checkers[i].sh_name;
 		printf("Section [%2d]: %-16s offset: 0x%06lx size: %06d available space: %lu \n",
 	    	i, name, section_headers_checkers[i].sh_offset, section_headers_checkers[i].sh_size, section_headers_checkers[i+1].sh_offset - (section_headers_checkers[i].sh_offset + section_headers_checkers[i].sh_size));
-}
+	}
 }
