@@ -167,22 +167,22 @@ void *append_shellcode(char *str)
 {
 	if (!str)
 		return (NULL);
-	printf("text section0");
+	printf("text section0\n");
 	int fd = open(str, O_RDWR);
-	printf("text section10");
+	printf("text section10\n");
 	if (fd < 0)
 	{
 		write(2, "problem opening file\n", 21);
 		return (NULL);
 	}
 	off_t f_size = lseek(fd, 0, SEEK_END);
-	printf("text section11");
+	printf("text section11\n");
 	size_t aligned_offset = ALIGN_UP(f_size, 0x1000);
-	printf("text section12");
+	printf("text section12\n");
 
 	size_t new_size = aligned_offset + sizeof(shellcode);
 
-	printf("text section1");
+	printf("text section1\n");
 	// MAP_SHARED will edit the actual file and not just a copy of it
 	void	*new_map = mmap(NULL, new_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0); 
 	if (new_map == MAP_FAILED)
@@ -191,9 +191,9 @@ void *append_shellcode(char *str)
 		close(fd);
 		return (NULL);
 	}
-	printf("text section2");
+	printf("text section2\n");
 	memcpy(new_map + aligned_offset, shellcode, sizeof(shellcode));
-	printf("text section3");
+	printf("text section3v\n");
 	update_elf(new_map, aligned_offset, fd);
 	close(fd);
 	return (new_map);
@@ -253,6 +253,7 @@ int main(void)
 
 	// vera shenanigans
 	inspection(header, section_headers, map, text_sheader, text_ind);
+	printf("bro wtf is going on\n");
 	void *new_map = append_shellcode("skip");
 
 	printf("text section");
