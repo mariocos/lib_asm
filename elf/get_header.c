@@ -21,13 +21,7 @@ unsigned char shellcode[] = {0xbb, 0x00, 0x00, 0x00, 0x00, 0xb9, 0x00, 0x00, 0x0
 	0x48, 0x83, 0xfb, 0x0a, 0x7c, 0xec, 0xb8, 0x3c, 0x00, 0x00, 0x00, 0x48, 0x89, \
 	0xcf, 0x0f, 0x05};
 
-size_t get_size(size_t size) // returns the size of the file if used with GET and sets up the size otherwise
-{
-	static size_t var = 0;
-	if (var != GET)
-		var = size;
-	return var;
-}
+size_t size_of_file = 0;
 
 int	ft_strcmp(const char *s1, const char *s2)
 {
@@ -165,7 +159,7 @@ void *create_new_file(void *old_map)
 	}
 	off_t f_size = lseek(fd, 0, SEEK_END);
 	size_t new_size = f_size + sizeof(shellcode) + 65;
-	get_size(new_size);
+	size_of_file = new_size;
 
 	int new_fd = open("new_file", O_RDWR | O_CREAT | O_TRUNC, 0777);
 	if (new_fd < 0)
@@ -222,8 +216,8 @@ void	inject_new_header(void *map)
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
 	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
 
-	printf("This is the size%lu\n", get_size(GET));
-	off_t shellcode_offset = get_size(GET) - sizeof(shellcode) - 65;
+	printf("This is the size%lu\n", size_of_file);
+	off_t shellcode_offset = size_of_file - sizeof(shellcode) - 65;
 	memcpy(map + shellcode_offset, shellcode, sizeof(shellcode));
 
 	// this should be sec of map + offset till section headers + number of section headers * size (typically 64 cuz 64ELF)
