@@ -102,7 +102,13 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 		{
 			printf("name of section [%s]\n", (sh_strtable + shdrs[i].sh_name ));
 			if (!ft_strcmp(sh_strtable + shdrs[i].sh_name, ".text"))
+			{
+				printf("text at .text: ");
+				for (unsigned long i = 0; i <= shdrs[i].sh_size; i++)
+					printf("0x%02x ", *(unsigned char *)(map + new_shdr->sh_offset + i));
+				printf("\n");
 				return (i);
+			}
 		}
 	}
 	return (-1);
