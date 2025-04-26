@@ -207,8 +207,9 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 
             phdr[i].p_memsz += sizeof(shellcode) + (new_shdr->sh_addr - phdr[i].p_memsz);
             phdr[i].p_filesz += sizeof(shellcode) + (new_shdr->sh_addr - phdr[i].p_memsz);
+			printf("The p_memsz and p_filesz are now: 0x%lx and 0x%lx(after adding)\n",phdr[i].p_memsz, phdr[i].p_filesz);
             phdr[i].p_flags |= PF_X; // Ensure it's executables
-
+g
             break;
         }
     }
