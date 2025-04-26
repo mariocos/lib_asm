@@ -220,6 +220,8 @@ void	update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 	{
         if (phdr[i].p_type == PT_LOAD) 
 		{
+			printf("PT_LOAD %d: vaddr: 0x%lx - 0x%lx (memsz: 0x%lx)\n",
+               i, phdr[i].p_vaddr, phdr[i].p_vaddr + phdr[i].p_memsz, phdr[i].p_memsz);
             // Modify the first PT_LOAD segment to include the new section if possible
             if (phdr[i].p_vaddr + phdr[i].p_memsz < new_shdr->sh_addr) 
 			{
@@ -230,6 +232,8 @@ void	update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
             break;
         }
     }
+	printf("Injected section virtual address: 0x%lx (size: 0x%lx)\n",
+       new_shdr->sh_addr, new_shdr->sh_size);
 }
 
 void	inject_new_header(void *map)
