@@ -55,11 +55,12 @@ Section [27]: .strtab          offset: 0x0108b0 size: 000560 available space: 0
 Section [28]: .shstrtab        offset: 0x010ae0 size: 000259 available space: 18446744073709483037 
 This are the addresses:
 Section header offset: 68584
-This is the address of the new_map:0xffff9f3de000Number of section headers: 29
- size:64This is the address of the new_shrd:0xffff9f3ef328
+This is the address of the new_map:0xffffa1bde000Number of section headers: 29
+ size:64This is the address of the new_shrd:0xffffa1bef328
 PT_LOAD 2: vaddr: 0x0 - 0x884 (memsz: 0x884)
 The p_memsz and p_filesz are now: 0x884 and 0x884
  and were added:0x28
+The p_memsz and p_filesz are now: 0x8b8 and 0x8b8(after adding)
 Injected section virtual address: 0x890 (size: 0x28)
 this is the print of ehdr->e_shoff: 0x10be8 
 Shellcode injected at offset 0x890, entry point set to 0x890
