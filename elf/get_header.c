@@ -7,14 +7,10 @@
 #include <unistd.h>
 #include <string.h>
 
-// in-line to align the offset of the new inject code to a 4096 aka 0x1000 usual padding in between sections
-#define ALIGN_UP(x, align) (((x) + ((align)-1)) & ~((align)-1)) //not too sure of whats going on w the ~ tho
 
 #define NEW_SECTION_NAME ".inject"
 
 #define FILE "skip"
-
-#define GET -10 // for get_size
 
 unsigned char shellcode[] = {0xbb, 0x00, 0x00, 0x00, 0x00, 0xb9, 0x00, 0x00, 0x00, 0x00, 0x48,\
 	0x83, 0xfb, 0x0a, 0x7f, 0x0e, 0x48, 0x83, 0xc3, 0x01, 0x48, 0x83, 0xc1, 0x02, \
@@ -209,7 +205,7 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
             new_shdr->sh_offset = inject_shellcode_offset;
 			printf("The p_memsz and p_filesz are now: 0x%lx and 0x%lx\n and were added:0x%lx\n",phdr[i].p_memsz, phdr[i].p_filesz, sizeof(shellcode));
 
-            phdr[i].p_memsz += sizeof(shellcode);
+            phdr[i].p_memsz += sizeof(shellcode) + (new_shdr->sh_addr - phdr[i].p_memsz);
             phdr[i].p_filesz += sizeof(shellcode);
             phdr[i].p_flags |= PF_X; // Ensure it's executables
 
@@ -219,7 +215,7 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 
 	printf("Injected section virtual address: 0x%lx (size: 0x%lx)\n",
 		new_shdr->sh_addr, new_shdr->sh_size);
-	printf("this is the print of ehdr->e_shoff: 0x%lx \n"ehdr->e_shoff);
+	printf("this is the print of ehdr->e_shoff: 0x%lx \n", ehdr->e_shoff);
 }
 
 void	inject_new_header(void *map)
