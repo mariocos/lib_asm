@@ -190,50 +190,33 @@ void *create_new_file(void *old_map)
 	return (new_map);
 }
 
-Elf64_Addr find_next_virtual_address(void *map)
+
+void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr) 
 {
-    Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
     Elf64_Phdr *phdr = (Elf64_Phdr *)(map + ehdr->e_phoff);
 
-    Elf64_Addr max_vaddr_end = 0;
-	Elf64_Addr seg_end = 0;
+	Elf64_Addr inject_shellcode_virtual_address;
+	Elf64_Off inject_shellcode_offset;
 
     for (int i = 0; i < ehdr->e_phnum; i++) {
-        if (phdr[i].p_type == PT_LOAD) {
-            seg_end = phdr[i].p_vaddr + phdr[i].p_memsz;
-            if (seg_end > max_vaddr_end)
-                max_vaddr_end = seg_end;
-        }
-    }
+        if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) {
+            printf("PT_LOAD %d: vaddr: 0x%lx - 0x%lx (memsz: 0x%lx)\n",
+                   i, phdr[i].p_vaddr, phdr[i].p_vaddr + phdr[i].p_memsz, phdr[i].p_memsz);
 
-    // Align to next 0x1000 boundary
-    Elf64_Addr aligned_addr = (max_vaddr_end + 0xFFF) & ~0xFFF;
-    return aligned_addr;
-}
+            // Inject after this segment
+            inject_shellcode_virtual_address = (phdr[i].p_vaddr + phdr[i].p_memsz + 0xF) & ~0xF;
+            inject_shellcode_offset = (phdr[i].p_offset + phdr[i].p_filesz + 0xF) & ~0xF;
 
-void	update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
-{
-	Elf64_Phdr *phdr = (Elf64_Phdr *)(map + ehdr->e_phoff);
-    
-    // Find a PT_LOAD segment
-    for (int i = 0; i < ehdr->e_phnum; i++) 
-	{
-        if (phdr[i].p_type == PT_LOAD) 
-		{
-			printf("PT_LOAD %d: vaddr: 0x%lx - 0x%lx (memsz: 0x%lx)\n",
-               i, phdr[i].p_vaddr, phdr[i].p_vaddr + phdr[i].p_memsz, phdr[i].p_memsz);
-            // Modify the first PT_LOAD segment to include the new section if possible
-            if (phdr[i].p_vaddr + phdr[i].p_memsz < new_shdr->sh_addr) 
-			{
-                // Add the shellcode section to the segment found
-                phdr[i].p_memsz += new_shdr->sh_size;
-                phdr[i].p_filesz += new_shdr->sh_size;
-            }
+            new_shdr->sh_addr = inject_shellcode_virtual_address;
+            new_shdr->sh_offset = inject_shellcode_offset;
+
+            phdr[i].p_memsz = inject_shellcode_virtual_address + sizeof(shellcode) - phdr[i].p_vaddr;
+            phdr[i].p_filesz = inject_shellcode_offset + sizeof(shellcode) - phdr[i].p_offset;
+            phdr[i].p_flags |= PF_X; // Ensure it's executable
+
             break;
         }
     }
-	printf("Injected section virtual address: 0x%lx (size: 0x%lx)\n",
-       new_shdr->sh_addr, new_shdr->sh_size);
 }
 
 void	inject_new_header(void *map)
@@ -241,9 +224,7 @@ void	inject_new_header(void *map)
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
 	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
 
-	printf("This is the size%lu\n", size_of_file);
 	off_t shellcode_offset = size_of_file - sizeof(shellcode) - 65;
-	memcpy(map + shellcode_offset, shellcode, sizeof(shellcode));
 
 	printf("after first memcpy\n");
 	// this should be sec of map + offset till section headers + number of section headers * size (typically 64 cuz 64ELF)
@@ -254,17 +235,22 @@ void	inject_new_header(void *map)
 	memset(new_shdr, 0, sizeof(Elf64_Shdr));
 	printf("after second memcpy\n");
 
-	new_shdr->sh_name = 0; // We'll skip name setup for now cuz im not too sure if its needed(?)
-	new_shdr->sh_type = SHT_PROGBITS;
-	new_shdr->sh_flags = SHF_ALLOC | SHF_EXECINSTR;
-	new_shdr->sh_offset = shellcode_offset;
-	new_shdr->sh_addr = find_next_virtual_address(map);
-	new_shdr->sh_size = sizeof(shellcode);
-	new_shdr->sh_addralign = 0x10;
+	new_shdr->sh_name = 0;
+    new_shdr->sh_type = SHT_PROGBITS;
+    new_shdr->sh_flags = SHF_ALLOC | SHF_EXECINSTR;
+    new_shdr->sh_size = sizeof(shellcode);
+    new_shdr->sh_addralign = 0x10;
+
+	update_phdr(map, ehdr, new_shdr);
+
+	memcpy(map + new_shdr->sh_offset, shellcode, sizeof(shellcode));
+
 	ehdr->e_shnum += 1;
 	ehdr->e_entry = new_shdr->sh_addr;
 
-	update_phdr(map, ehdr, new_shdr);
+	printf("Shellcode injected at offset 0x%lx, entry point set to 0x%lx\n",
+		new_shdr->sh_offset, new_shdr->sh_addr);
+
 }
 
 int main(void)
