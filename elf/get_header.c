@@ -246,7 +246,11 @@ void	inject_new_header(void *map)
 
 	ehdr->e_shnum += 1;
 	ehdr->e_entry = new_shdr->sh_addr;
-	write(2,(char *)(map + new_shdr->sh_offset), 1);
+	printf("Shellcode injected at virtual address: ");
+	for (unsigned long i = 0; i < 39; i++)
+		printf("0x%lx ,", (unsigned long)(map + new_shdr->sh_offset + i));
+	printf("\n");
+
 
 	printf("Shellcode injected at offset 0x%lx, entry point set to 0x%lx\n",
 		new_shdr->sh_offset, new_shdr->sh_addr);
