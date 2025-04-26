@@ -190,20 +190,18 @@ void *create_new_file(void *old_map)
 	return (new_map);
 }
 
-
 void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr) 
 {
     Elf64_Phdr *phdr = (Elf64_Phdr *)(map + ehdr->e_phoff);
 
-	Elf64_Addr inject_shellcode_virtual_address;
-	Elf64_Off inject_shellcode_offset;
+	Elf64_Addr inject_shellcode_virtual_address; // added for more code clarity, TODO: take it off maybe?
+	Elf64_Off inject_shellcode_offset; // added for more code clarity, TODO: take it off maybe?
 
     for (int i = 0; i < ehdr->e_phnum; i++) {
         if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) {
             printf("PT_LOAD %d: vaddr: 0x%lx - 0x%lx (memsz: 0x%lx)\n",
                    i, phdr[i].p_vaddr, phdr[i].p_vaddr + phdr[i].p_memsz, phdr[i].p_memsz);
 
-            // Inject after this segment
             inject_shellcode_virtual_address = (phdr[i].p_vaddr + phdr[i].p_memsz + 0xF) & ~0xF;
             inject_shellcode_offset = (phdr[i].p_offset + phdr[i].p_filesz + 0xF) & ~0xF;
 
@@ -217,6 +215,9 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
             break;
         }
     }
+
+	printf("Injected section virtual address: 0x%lx (size: 0x%lx)\n",
+           new_shdr->sh_addr, new_shdr->sh_size);
 }
 
 void	inject_new_header(void *map)
@@ -225,15 +226,13 @@ void	inject_new_header(void *map)
 	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
 
 	off_t shellcode_offset = size_of_file - sizeof(shellcode) - 65;
-
-	printf("after first memcpy\n");
-	// this should be sec of map + offset till section headers + number of section headers * size (typically 64 cuz 64ELF)
-	printf("This are the addresses:Section header offset: %d\nThis is the address of the new_map:0x%lx"
-				"Number of section headers: %d\n size:%d", ehdr->e_shoff, map, ehdr->e_shnum, , ehdr->e_shentsize);
+	
+	printf("This are the addresses:\nSection header offset: %d\nThis is the address of the new_map:0x%lx"
+		"Number of section headers: %d\n size:%d", ehdr->e_shoff, map, ehdr->e_shnum, ehdr->e_shentsize);
+		// this should be sec of map + offset till section headers + number of section headers * size (typically 64 cuz 64ELF)
 	Elf64_Shdr *new_shdr = (Elf64_Shdr *)(map + ehdr->e_shoff + ehdr->e_shnum * ehdr->e_shentsize);
 	printf("This is the address of the new_shrd:0x%lx\n", new_shdr);
 	memset(new_shdr, 0, sizeof(Elf64_Shdr));
-	printf("after second memcpy\n");
 
 	new_shdr->sh_name = 0;
     new_shdr->sh_type = SHT_PROGBITS;
