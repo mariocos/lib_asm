@@ -215,6 +215,8 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 
 	printf("Injected section virtual address: 0x%lx (size: 0x%lx)\n",
 		new_shdr->sh_addr, new_shdr->sh_size);
+	printf("This is the sh_offset im using:: 0x%lx (size: 0x%lx)\n",
+		new_shdr->sh_offset, new_shdr->sh_size);
 	printf("this is the print of ehdr->e_shoff: 0x%lx \n", ehdr->e_shoff);
 }
 
