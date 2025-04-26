@@ -248,7 +248,7 @@ void	inject_new_header(void *map)
 	printf("after first memcpy\n");
 	// this should be sec of map + offset till section headers + number of section headers * size (typically 64 cuz 64ELF)
 	printf("This are the addresses:Section header offset: %d\nThis is the address of the new_map:0x%lx"
-				"Number of section headers: %d\n size:%d", ehdr->e_shoff,  ehdr->e_shnum, map, ehdr->e_shentsize);
+				"Number of section headers: %d\n size:%d", ehdr->e_shoff, map, ehdr->e_shnum, , ehdr->e_shentsize);
 	Elf64_Shdr *new_shdr = (Elf64_Shdr *)(map + ehdr->e_shoff + ehdr->e_shnum * ehdr->e_shentsize);
 	printf("This is the address of the new_shrd:0x%lx\n", new_shdr);
 	memset(new_shdr, 0, sizeof(Elf64_Shdr));
