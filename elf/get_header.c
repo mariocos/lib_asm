@@ -207,6 +207,7 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 
             new_shdr->sh_addr = inject_shellcode_virtual_address;
             new_shdr->sh_offset = inject_shellcode_offset;
+			printf("The p_memsz and p_filesz are now: 0x%lx and 0x%lx\n and were added:0x%lx\n",phdr[i].p_memsz, phdr[i].p_filesz, sizeof(shellcode));
 
             phdr[i].p_memsz += sizeof(shellcode);
             phdr[i].p_filesz += sizeof(shellcode);
