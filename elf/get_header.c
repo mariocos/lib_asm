@@ -208,9 +208,9 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
             new_shdr->sh_addr = inject_shellcode_virtual_address;
             new_shdr->sh_offset = inject_shellcode_offset;
 
-            phdr[i].p_memsz = inject_shellcode_virtual_address + sizeof(shellcode) - phdr[i].p_vaddr; // TODO: FIX THIS
-            phdr[i].p_filesz = inject_shellcode_offset + sizeof(shellcode) - phdr[i].p_offset; // TODO: FIX THIS
-            phdr[i].p_flags |= PF_X; // Ensure it's executable
+            phdr[i].p_memsz += sizeof(shellcode);
+            phdr[i].p_filesz += sizeof(shellcode);
+            phdr[i].p_flags |= PF_X; // Ensure it's executables
 
             break;
         }
