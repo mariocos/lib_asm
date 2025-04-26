@@ -193,7 +193,7 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 	Elf64_Addr inject_shellcode_virtual_address; // added for more code clarity, TODO: take it off maybe?
 	Elf64_Off inject_shellcode_offset; // added for more code clarity, TODO: take it off maybe?
 
-    for (int i = 0; i < ehdr->e_phnum; i++) {
+    for (int i = ehdr->e_phnum; i > 0; i--) {
         if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) {
             printf("PT_LOAD %d: vaddr: 0x%lx - 0x%lx (memsz: 0x%lx)\n",
                    i, phdr[i].p_vaddr, phdr[i].p_vaddr + phdr[i].p_memsz, phdr[i].p_memsz);
