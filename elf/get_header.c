@@ -7,7 +7,6 @@
 #include <unistd.h>
 #include <string.h>
 
-
 #define NEW_SECTION_NAME ".inject"
 
 #define FILE "skip"
@@ -160,8 +159,7 @@ void *create_new_file(void *old_map)
 		return (NULL);
 	}
 	off_t f_size = lseek(fd, 0, SEEK_END);
-	size_t new_size = f_size + sizeof(shellcode) + 65;
-	size_of_file = new_size;
+	size_t new_size = f_size + sizeof(shellcode) + sizeof(Elf64_Shdr);
 
 	int new_fd = open("new_file", O_RDWR | O_CREAT | O_TRUNC, 0777);
 	if (new_fd < 0)
@@ -170,7 +168,7 @@ void *create_new_file(void *old_map)
 		return (NULL);
 	}
 
-	if (lseek(new_fd, new_size - 1, SEEK_SET) == -1 || write(new_fd, "", 1) != 1)
+	if (lseek(new_fd, new_size, SEEK_SET) == -1 || write(new_fd, "", 1) != 1)
 	{
 		perror("extending file");
 		close(new_fd);
@@ -221,7 +219,8 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 					printf("Section [%s] inside PT_LOAD %d\n", shstrtab + shdr[j].sh_name, i);
 				}
 			}
-			printf("The p_memsz and p_filesz are now: 0x%lx and 0x%lx\n and were added:0x%lx\n",phdr[i].p_memsz, phdr[i].p_filesz, sizeof(shellcode));
+			printf("The p_memsz and p_filesz are now: 0x%lx and 0x%lx\n and were added:0x%lx\n",
+				phdr[i].p_memsz, phdr[i].p_filesz, sizeof(shellcode));
 
             phdr[i].p_memsz = (inject_shellcode_virtual_address + sizeof(shellcode)) - phdr[i].p_vaddr;
 			phdr[i].p_filesz = (inject_shellcode_offset + sizeof(shellcode)) - phdr[i].p_offset;
@@ -244,7 +243,7 @@ void	inject_new_header(void *map)
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
 	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
 
-	off_t shellcode_offset = size_of_file - sizeof(shellcode) - 65;
+	off_t shellcode_offset = size_of_file - sizeof(shellcode) - sizeof(Elf64_Shdr);
 	
 	printf("This are the addresses:\nSection header offset: %d\nThis is the address of the new_map:0x%lx"
 		"Number of section headers: %d\n size:%d", ehdr->e_shoff, map, ehdr->e_shnum, ehdr->e_shentsize);
@@ -290,7 +289,7 @@ int main(void)
 
 	int text_ind = get_text_section_index(map, header);
 	Elf64_Shdr	*text_sheader = (Elf64_Shdr *)&section_headers[text_ind];
-	printf("text section offset [%p] and size [%d]\n", text_sheader->sh_offset, text_sheader->sh_size);
+	// printf("text section offset [%p] and size [%d]\n", text_sheader->sh_offset, text_sheader->sh_size);
 
 	// vera shenanigans
 	inspection(header, section_headers, map, text_sheader, text_ind);
