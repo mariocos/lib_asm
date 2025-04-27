@@ -105,7 +105,7 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 			{
 				printf("text at .text: ");
 				for (unsigned long i = 0; i <= shdrs[i].sh_size; i++)
-					printf("0x%02x ", *(unsigned char *)(map + new_shdr->sh_offset + i));
+					printf("0x%02x ", *(unsigned char *)(map + shdrs[i].sh_offset + i));
 				printf("\n");
 				return (i);
 			}
