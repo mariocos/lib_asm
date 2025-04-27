@@ -205,7 +205,7 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
     for (int i = ehdr->e_phnum; i > 0; i--) {
         if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) {
             printf("PT_LOAD %d: vaddr: 0x%lx - 0x%lx (memsz: 0x%lx)\n",
-                   i, phdr[i].p_vaddr, phdr[i].p_vaddr + phdr[i].p_memsz, phdr[i].p_memsz);
+            	i, phdr[i].p_vaddr, phdr[i].p_vaddr + phdr[i].p_memsz, phdr[i].p_memsz);
 
             inject_shellcode_virtual_address = (phdr[i].p_vaddr + phdr[i].p_memsz + 0xF) & ~0xF;
             inject_shellcode_offset = (phdr[i].p_offset + phdr[i].p_filesz + 0xF) & ~0xF;
@@ -213,10 +213,10 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
             new_shdr->sh_addr = inject_shellcode_virtual_address;
             new_shdr->sh_offset = inject_shellcode_offset;
 			for (int j = 0; j < ehdr->e_shnum; j++) {
-				if (shdrs[j].sh_addr >= phdr[i].p_vaddr &&
-					(shdrs[j].sh_addr + shdrs[j].sh_size) <= (phdr[i].p_vaddr + phdr[i].p_memsz)) {
+				if (new_shdr[j].sh_addr >= phdr[i].p_vaddr &&
+					(new_shdr[j].sh_addr + new_shdr[j].sh_size) <= (phdr[i].p_vaddr + phdr[i].p_memsz)) {
 			
-					printf("Section [%s] inside PT_LOAD %d\n", shstrtab + shdrs[j].sh_name, i);
+					printf("Section [%s] inside PT_LOAD %d\n", shstrtab + new_shdr[j].sh_name, i);
 				}
 			}
 			printf("The p_memsz and p_filesz are now: 0x%lx and 0x%lx\n and were added:0x%lx\n",phdr[i].p_memsz, phdr[i].p_filesz, sizeof(shellcode));
