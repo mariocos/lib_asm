@@ -199,6 +199,9 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 	Elf64_Addr inject_shellcode_virtual_address; // added for more code clarity, TODO: take it off maybe?
 	Elf64_Off inject_shellcode_offset; // added for more code clarity, TODO: take it off maybe?
 
+	// For debug purposes
+	char *shstrtab = (char *)(map + new_shdr[ehdr->e_shstrndx].sh_offset);
+
     for (int i = ehdr->e_phnum; i > 0; i--) {
         if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) {
             printf("PT_LOAD %d: vaddr: 0x%lx - 0x%lx (memsz: 0x%lx)\n",
@@ -209,11 +212,18 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 
             new_shdr->sh_addr = inject_shellcode_virtual_address;
             new_shdr->sh_offset = inject_shellcode_offset;
-			printf("name of section [%s]\n", ((char*)(map + new_shdr[eheader->e_shstrndx].sh_offset) + shdrs[i].sh_name ));
+			for (int j = 0; j < ehdr->e_shnum; j++) {
+				if (shdrs[j].sh_addr >= phdr[i].p_vaddr &&
+					(shdrs[j].sh_addr + shdrs[j].sh_size) <= (phdr[i].p_vaddr + phdr[i].p_memsz)) {
+			
+					printf("Section [%s] inside PT_LOAD %d\n", shstrtab + shdrs[j].sh_name, i);
+				}
+			}
 			printf("The p_memsz and p_filesz are now: 0x%lx and 0x%lx\n and were added:0x%lx\n",phdr[i].p_memsz, phdr[i].p_filesz, sizeof(shellcode));
 
-            phdr[i].p_memsz += sizeof(shellcode) + (new_shdr->sh_addr - phdr[i].p_memsz);
-            phdr[i].p_filesz += sizeof(shellcode) + (new_shdr->sh_addr - phdr[i].p_filesz);
+            phdr[i].p_memsz = (inject_shellcode_virtual_address + sizeof(shellcode)) - phdr[i].p_vaddr;
+			phdr[i].p_filesz = (inject_shellcode_offset + sizeof(shellcode)) - phdr[i].p_offset;
+			
 			printf("The p_memsz and p_filesz are now: 0x%lx and 0x%lx(after adding)\n",phdr[i].p_memsz, phdr[i].p_filesz);
             phdr[i].p_flags |= PF_X; // Ensure it's executables
             break;
