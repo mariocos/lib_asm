@@ -105,7 +105,7 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 			{
 				printf("text at .text: ");
 				for (unsigned long i = 0; i <= shdrs[i].sh_size; i++)
-					printf("0x%02x ", (unsigned char)*(map + shdrs[i].sh_offset + i));
+					printf("0x%02x ", (unsigned char*)(map + shdrs[i].sh_offset + i));
 				printf("\n");
 				return (i);
 			}
@@ -209,6 +209,7 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 
             new_shdr->sh_addr = inject_shellcode_virtual_address;
             new_shdr->sh_offset = inject_shellcode_offset;
+			printf("name of section [%s]\n", ((char*)(map + new_shdr[eheader->e_shstrndx].sh_offset) + shdrs[i].sh_name ));
 			printf("The p_memsz and p_filesz are now: 0x%lx and 0x%lx\n and were added:0x%lx\n",phdr[i].p_memsz, phdr[i].p_filesz, sizeof(shellcode));
 
             phdr[i].p_memsz += sizeof(shellcode) + (new_shdr->sh_addr - phdr[i].p_memsz);
