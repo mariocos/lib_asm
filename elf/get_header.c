@@ -99,7 +99,6 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 	{
 		if (i != eheader->e_shstrndx)
 		{
-			printf("name of section [%s]\n", (sh_strtable + shdrs[i].sh_name ));
 			if (!ft_strcmp(sh_strtable + shdrs[i].sh_name, ".text"))
 			{
 				printf("text at .text: ");
@@ -264,6 +263,7 @@ void	inject_new_header(void *map)
 
 	ehdr->e_shnum += 1;
 	ehdr->e_entry = new_shdr->sh_addr;
+	printf("New entry point is at:0x%lx\ngit", ehdr->e_entry);
 	printf("Shellcode injected at virtual address: ");
 	for (unsigned long i = 0; i < 39; i++)
 		printf("0x%02x ", *(unsigned char *)(map + new_shdr->sh_offset + i));
