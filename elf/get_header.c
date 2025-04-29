@@ -204,7 +204,7 @@ void check_placement_of_header_tables(void *map, Elf64_Ehdr *ehdr)
 
 
 	printf("wich header table comes first: [%s]\n",(shdrs < phdrs) ? "sections!" : "programs:(" );
-	printf("yes? [%d]\n",(void*)(&phdrs[ehdr->e_phnum] + 64) - (void*)shdrs);
+	printf("yes? [%d]\n",(char*)(&phdrs[ehdr->e_phnum] + 64) - (char*)shdrs);
 	for (short i = 0; i < (short)ehdr->e_shnum; i++)
 	{
 		if (shdrs[i].sh_offset > shdr_table_start || shdrs[i].sh_offset > phdr_table_start)
@@ -219,6 +219,7 @@ void check_placement_of_header_tables(void *map, Elf64_Ehdr *ehdr)
 			printf("start of segment comes after header tables\n");
 		}
 	}
+
 }
 
 void *create_new_file(void *old_map)
@@ -381,5 +382,5 @@ int main(void)
 	// printf("text section offset [%p] and size [%d]\n", new_text_sheader->sh_offset, new_text_sheader->sh_size);
 	// inspection(new_header, new_section_headers, new_map, new_text_sheader, new_text_ind);
 
-	check_placement_of_header_tables(map,header);
+	check_placement_of_header_tables(map, header);
 }
