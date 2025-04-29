@@ -193,6 +193,34 @@ void	inspection(Elf64_Ehdr *header, Elf64_Shdr *section_headers,  void *map, Elf
 	}
 }
 
+void check_placement_of_header_tables(void *map, Elf64_Ehdr *ehdr)
+{
+	long space_amount;
+	Elf64_Shdr *shdr_table_start = (Elf64_Phdr*)(map + ehdr->e_shoff);
+	Elf64_Shdr *shdrs = (Elf64_Phdr*)(map + ehdr->e_shoff);
+
+	Elf64_Phdr *phdr_table_start  = (Elf64_Phdr*)(map + ehdr->e_phoff);
+	Elf64_Phdr *phdrs = (Elf64_Phdr*)(map + ehdr->e_phoff);
+
+
+	printf("wich header table comes first: [%s]\n",(shdrs < phdrs) ? "sections!" : "programs:(" );
+	printf("yes? [%d]\n",(void*)(&phdrs[ehdr->e_phnum] + 64) - (void*)shdrs);
+	for (short i = 0; i < (short)ehdr->e_shnum; i++)
+	{
+		if (shdrs[i].sh_offset > shdr_table_start || shdrs[i].sh_offset > phdr_table_start)
+		{
+			printf("start of section comes after header tables\n");
+		}
+	}
+	for (short i = 0; i < (short)ehdr->e_phnum; i++)
+	{
+		if (phdrs[i].p_offset > shdr_table_start || phdrs[i].p_offset > phdr_table_start)
+		{
+			printf("start of segment comes after header tables\n");
+		}
+	}
+}
+
 void *create_new_file(void *old_map)
 {
 	int fd = open(FILE, O_RDONLY);
@@ -323,7 +351,7 @@ int main(void)
 {
 	void *map = get_map(FILE);
 
-	print_header(map, 64);
+	// print_header(map, 64);
 	Elf64_Ehdr	*header = (Elf64_Ehdr *)map;
 	Elf64_Shdr	*section_headers = (Elf64_Shdr *)(map + header->e_shoff);
 
@@ -336,20 +364,22 @@ int main(void)
 	// printf("text section offset [%p] and size [%d]\n", text_sheader->sh_offset, text_sheader->sh_size);
 
 	// vera shenanigans
-	inspection(header, section_headers, map, text_sheader, text_ind);
-	void *new_map = create_new_file(map);
-	inject_new_header(new_map);
+	// inspection(header, section_headers, map, text_sheader, text_ind);
+	// void *new_map = create_new_file(map);
+	// inject_new_header(new_map);
 
-	printf("text section");
-	Elf64_Ehdr	*new_header = (Elf64_Ehdr *)new_map;
-	Elf64_Shdr	*new_section_headers = (Elf64_Shdr *)(new_map + new_header->e_shoff);
+	// printf("text section");
+	// Elf64_Ehdr	*new_header = (Elf64_Ehdr *)new_map;
+	// Elf64_Shdr	*new_section_headers = (Elf64_Shdr *)(new_map + new_header->e_shoff);
 
-	int	new_sheader_nbr = new_header->e_shnum;
-	int new_sheader_size = new_header->e_shentsize;
+	// int	new_sheader_nbr = new_header->e_shnum;
+	// int new_sheader_size = new_header->e_shentsize;
 
 
-	int new_text_ind = get_text_section_index(new_map, new_header);
-	Elf64_Shdr	*new_text_sheader = (Elf64_Shdr *)&new_section_headers[new_text_ind];
-	printf("text section offset [%p] and size [%d]\n", new_text_sheader->sh_offset, new_text_sheader->sh_size);
-	inspection(new_header, new_section_headers, new_map, new_text_sheader, new_text_ind);
+	// int new_text_ind = get_text_section_index(new_map, new_header);
+	// Elf64_Shdr	*new_text_sheader = (Elf64_Shdr *)&new_section_headers[new_text_ind];
+	// printf("text section offset [%p] and size [%d]\n", new_text_sheader->sh_offset, new_text_sheader->sh_size);
+	// inspection(new_header, new_section_headers, new_map, new_text_sheader, new_text_ind);
+
+	check_placement_of_header_tables(map,header);
 }
