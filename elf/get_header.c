@@ -210,14 +210,7 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
             inject_shellcode_offset = (phdr[i].p_offset + phdr[i].p_filesz + 0xF) & ~0xF;
 
             new_shdr->sh_addr = inject_shellcode_virtual_address;
-            new_shdr->sh_offset = inject_shellcode_offset;
-			for (int j = 0; j < ehdr->e_shnum; j++) {
-				if (shdr[j].sh_addr >= phdr[i].p_vaddr &&
-					(shdr[j].sh_addr + shdr[j].sh_size) <= (phdr[i].p_vaddr + phdr[i].p_memsz)) {
-			
-					printf("Section [%s] inside PT_LOAD %d\n", shstrtab + shdr[j].sh_name, i);
-				}
-			}
+            new_shdr->sh_offset = inject_shellcode_offset;			
 			printf("The p_memsz and p_filesz are now: 0x%lx and 0x%lx\n and were added:0x%lx\n",
 				phdr[i].p_memsz, phdr[i].p_filesz, sizeof(shellcode));
 
@@ -229,6 +222,11 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
             break;
         }
     }
+
+	for (int i = ehdr->e_phnum; i > 0; i--) {
+        if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) {
+			printf("Section [%s] inside PT_LOAD %d\n", shstrtab + shdr[j].sh_name, i);
+		}}
 
 	printf("Injected section virtual address: 0x%lx (size: 0x%lx)\n",
 		new_shdr->sh_addr, new_shdr->sh_size);
@@ -262,6 +260,7 @@ void	inject_new_header(void *map)
 	memcpy(map + new_shdr->sh_offset, shellcode, sizeof(shellcode));
 
 	ehdr->e_shnum += 1;
+	printf("old entry point is at:0x%lx\ngit", ehdr->e_entry);
 	ehdr->e_entry = new_shdr->sh_addr;
 	printf("New entry point is at:0x%lx\ngit", ehdr->e_entry);
 	printf("Shellcode injected at virtual address: ");
