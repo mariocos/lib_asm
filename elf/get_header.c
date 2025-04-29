@@ -244,7 +244,7 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
 	char *shstrtab = (char *)(map + shdr[ehdr->e_shstrndx].sh_offset);
 
-	int	section_nbr = eheader->e_shnum;
+	short	section_nbr = ehdr->e_shnum;
 
     for (int i = section_nbr; i > 0; i--) {
         if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) {
@@ -268,7 +268,7 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
         }
     }
 
-	for (int i = section_nbr; i > 0; i--) {
+	for (short i = section_nbr; i > 0; i--) {
 
 		printf("Section [%s] outside PT_LOAD %d\n", shstrtab + shdr[i].sh_name, i);
 
