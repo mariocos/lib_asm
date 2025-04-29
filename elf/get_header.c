@@ -19,9 +19,9 @@ Elf64_Off e_shoff;        Section header table file offset
 Elf64_Word e_flags;
 Elf64_Half e_ehsize;
 Elf64_Half e_phentsize;
-Elf64_Half e_phnum;
+Elf64_Half e_phnum;			Program header number
 Elf64_Half e_shentsize;
-Elf64_Half e_shnum;
+Elf64_Half e_shnum;			Section header number
 Elf64_Half e_shstrndx;
 } Elf64_Ehdr;
 
@@ -311,11 +311,7 @@ void	inject_new_header(void *map)
 	ehdr->e_shnum += 1;
 	printf("old entry point is at:0x%lx\ngit", ehdr->e_entry);
 	ehdr->e_entry = new_shdr->sh_addr;
-	printf("New entry point is at:0x%lx\ngit", ehdr->e_entry);
-	printf("Shellcode injected at virtual address: ");
-	for (unsigned long i = 0; i < 39; i++)
-		printf("0x%02x ", *(unsigned char *)(map + new_shdr->sh_offset + i));
-	printf("\n");
+
 
 
 	printf("Shellcode injected at offset 0x%lx, entry point set to 0x%lx\n",
