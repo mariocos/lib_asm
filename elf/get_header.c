@@ -224,6 +224,9 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
     }
 
 	for (int i = ehdr->e_phnum; i > 0; i--) {
+
+		printf("Section [%s] outside PT_LOAD %d\n", shstrtab + shdr[i].sh_name, i);
+
         if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) {
 			printf("Section [%s] inside PT_LOAD %d\n", shstrtab + shdr[i].sh_name, i);
 		}
