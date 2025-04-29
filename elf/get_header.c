@@ -6,7 +6,51 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <string.h>
+/*
 
+typedef struct elf64_hdr {
+unsigned char e_ident[EI_NIDENT]; ELF "magic number" 
+Elf64_Half e_type;
+Elf64_Half e_machine;
+Elf64_Word e_version;
+Elf64_Addr e_entry;       Entry point virtual address 
+Elf64_Off e_phoff;        Program header table file offset
+Elf64_Off e_shoff;        Section header table file offset
+Elf64_Word e_flags;
+Elf64_Half e_ehsize;
+Elf64_Half e_phentsize;
+Elf64_Half e_phnum;
+Elf64_Half e_shentsize;
+Elf64_Half e_shnum;
+Elf64_Half e_shstrndx;
+} Elf64_Ehdr;
+
+typedef struct elf64_phdr {
+  255   Elf64_Word p_type;
+  256   Elf64_Word p_flags;
+  257   Elf64_Off p_offset;       Segment file offset 
+  258   Elf64_Addr p_vaddr;       Segment virtual address 
+  259   Elf64_Addr p_paddr;       Segment physical address
+  260   Elf64_Xword p_filesz;     Segment size in file 
+  261   Elf64_Xword p_memsz;      Segment size in memory
+  262   Elf64_Xword p_align;      Segment alignment, file & memory 
+  263 } Elf64_Phdr;
+
+ typedef struct elf64_shdr {
+  313   Elf64_Word sh_name;       Section name, index in string tbl 
+  314   Elf64_Word sh_type;       Type of section 
+  315   Elf64_Xword sh_flags;     Miscellaneous section attributes 
+  316   Elf64_Addr sh_addr;       Section virtual addr at execution 
+  317   Elf64_Off sh_offset;      Section file offset 
+  318   Elf64_Xword sh_size;      Size of section in bytes 
+  319   Elf64_Word sh_link;       Index of another section 
+  320   Elf64_Word sh_info;       Additional section information 
+  321   Elf64_Xword sh_addralign; Section alignment 
+  322   Elf64_Xword sh_entsize;   Entry size if section holds table 
+  323 } Elf64_Shdr;
+
+
+*/
 #define NEW_SECTION_NAME ".inject"
 
 #define FILE "skip"
@@ -200,8 +244,9 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
 	char *shstrtab = (char *)(map + shdr[ehdr->e_shstrndx].sh_offset);
 
+	int	section_nbr = eheader->e_shnum;
 
-    for (int i = ehdr->e_phnum; i > 0; i--) {
+    for (int i = section_nbr; i > 0; i--) {
         if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) {
             printf("PT_LOAD %d: vaddr: 0x%lx - 0x%lx (memsz: 0x%lx)\n",
             	i, phdr[i].p_vaddr, phdr[i].p_vaddr + phdr[i].p_memsz, phdr[i].p_memsz);
@@ -223,7 +268,7 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
         }
     }
 
-	for (int i = ehdr->e_phnum; i > 0; i--) {
+	for (int i = section_nbr; i > 0; i--) {
 
 		printf("Section [%s] outside PT_LOAD %d\n", shstrtab + shdr[i].sh_name, i);
 
@@ -236,7 +281,7 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 		new_shdr->sh_addr, new_shdr->sh_size);
 	printf("This is the sh_offset im using:: 0x%lx (size: 0x%lx)\n",
 		new_shdr->sh_offset, new_shdr->sh_size);
-	printf("this is the print of ehdr->e_phnum: 0x%lx \n", ehdr->e_phnum);
+	printf("this is the print of section_nbr: 0x%d \n", section_nbr);
 }
 
 void	inject_new_header(void *map)
