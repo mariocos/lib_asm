@@ -376,6 +376,7 @@ void	inject_in_padding(void *map)
 						shdr[i].sh_size));
 				memcpy(map + shdr[i].sh_offset + shdr[i].sh_size, shellcode, sizeof(shellcode));
 				ehdr->e_entry = shdr[i].sh_addr + shdr[i].sh_size;
+				printf("it was injected here:0x%lx\n",shdr[i].sh_addr + shdr[i].sh_size);
 				break;
 			}
 		else
