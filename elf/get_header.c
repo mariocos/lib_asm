@@ -375,7 +375,7 @@ void	inject_in_padding(void *map)
 					shdr[i+1].sh_offset - (shdr[i].sh_offset + \
 						shdr[i].sh_size));
 				memcpy(map + shdr[i].sh_offset + shdr[i].sh_size, shellcode, sizeof(shellcode));
-				ehdr->e_entry = map + shdr[i].sh_offset + shdr[i].sh_size;
+				ehdr->e_entry = shdr[i].sh_addr + shdr[i].sh_size;
 				break;
 			}
 		else
