@@ -193,34 +193,34 @@ void	inspection(Elf64_Ehdr *header, Elf64_Shdr *section_headers,  void *map, Elf
 	}
 }
 
-void check_placement_of_header_tables(void *map, Elf64_Ehdr *ehdr)
-{
-	long space_amount;
-	Elf64_Shdr *shdr_table_start = (Elf64_Phdr*)(map + ehdr->e_shoff);
-	Elf64_Shdr *shdrs = (Elf64_Phdr*)(map + ehdr->e_shoff);
+// void check_placement_of_header_tables(void *map, Elf64_Ehdr *ehdr)
+// {
+// 	long space_amount;
+// 	Elf64_Shdr *shdr_table_start = (Elf64_Phdr*)(map + ehdr->e_shoff);
+// 	Elf64_Shdr *shdrs = (Elf64_Phdr*)(map + ehdr->e_shoff);
 
-	Elf64_Phdr *phdr_table_start  = (Elf64_Phdr*)(map + ehdr->e_phoff);
-	Elf64_Phdr *phdrs = (Elf64_Phdr*)(map + ehdr->e_phoff);
+// 	Elf64_Phdr *phdr_table_start  = (Elf64_Phdr*)(map + ehdr->e_phoff);
+// 	Elf64_Phdr *phdrs = (Elf64_Phdr*)(map + ehdr->e_phoff);
 
 
-	printf("wich header table comes first: [%s]\n",(shdrs < phdrs) ? "sections!" : "programs:(" );
-	printf("yes? [%d]\n",(char*)(&phdrs[ehdr->e_phnum] + 64) - (char*)shdrs);
-	for (short i = 0; i < (short)ehdr->e_shnum; i++)
-	{
-		if (shdrs[i].sh_offset > shdr_table_start || shdrs[i].sh_offset > phdr_table_start)
-		{
-			printf("start of section comes after header tables\n");
-		}
-	}
-	for (short i = 0; i < (short)ehdr->e_phnum; i++)
-	{
-		if (phdrs[i].p_offset > shdr_table_start || phdrs[i].p_offset > phdr_table_start)
-		{
-			printf("start of segment comes after header tables\n");
-		}
-	}
+// 	printf("wich header table comes first: [%s]\n",(shdrs < phdrs) ? "sections!" : "programs:(" );
+// 	printf("yes? [%d]\n",(char*)(&phdrs[ehdr->e_phnum] + 64) - (char*)shdrs);
+// 	for (short i = 0; i < (short)ehdr->e_shnum; i++)
+// 	{
+// 		if (shdrs[i].sh_offset > shdr_table_start || shdrs[i].sh_offset > phdr_table_start)
+// 		{
+// 			printf("start of section comes after header tables\n");
+// 		}
+// 	}
+// 	for (short i = 0; i < (short)ehdr->e_phnum; i++)
+// 	{
+// 		if (phdrs[i].p_offset > shdr_table_start || phdrs[i].p_offset > phdr_table_start)
+// 		{
+// 			printf("start of segment comes after header tables\n");
+// 		}
+// 	}
 
-}
+// }
 
 void *create_new_file(void *old_map)
 {
@@ -296,6 +296,7 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
             break;
         }
     }
+	
 
 	for (short i = section_nbr; i > 0; i--) {
 
@@ -323,7 +324,7 @@ void	inject_new_header(void *map)
 	printf("This are the addresses:\nSection header offset: %d\nThis is the address of the new_map:0x%lx"
 		"Number of section headers: %d\n size:%d", ehdr->e_shoff, map, ehdr->e_shnum, ehdr->e_shentsize);
 		// this should be sec of map + offset till section headers + number of section headers * size (typically 64 cuz 64ELF)
-	Elf64_Shdr *new_shdr = (Elf64_Shdr *)(map + ehdr->e_shoff + ehdr->e_shnum * ehdr->e_shentsize);
+	Elf64_Shdr *new_shdr = (Elf64_Shdr *)(map + ehdr->e_shoff + (ehdr->e_shnum * sizeof(Elf64_Shdr)));
 	printf("This is the address of the new_shrd:0x%lx\n", new_shdr);
 	memset(new_shdr, 0, sizeof(Elf64_Shdr));
 
