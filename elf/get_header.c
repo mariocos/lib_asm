@@ -125,8 +125,7 @@ void	iterate_sheaders(void *map, Elf64_Ehdr *eheader)
 {
 	Elf64_Shdr *sheader = (Elf64_Shdr *)(map + eheader->e_shoff);
 	int	str_ind = eheader->e_shstrndx;
-	printf("the strheader index is %d out of %d\n", str_ind, eheader->e_shnum);
-	printf("section size is %d\n",sheader[str_ind].sh_size);
+	// printf("the strheader index is %d out of %d\n", str_ind, eheadeg
 	print_header(map + sheader[str_ind].sh_offset, sheader[str_ind].sh_size);
 }
 
@@ -358,7 +357,7 @@ void	inject_in_padding(void *map)
  	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
 
 
-	const char *sh_strtab = map + shdr[header->e_shstrndx].sh_offset;
+	const char *sh_strtab = map + shdr[ehdr->e_shstrndx].sh_offset;
 	const char *name = NULL;
 	 
 	for (int i = 0; i < ehdr->e_shnum; i++) {
@@ -377,6 +376,18 @@ void	inject_in_padding(void *map)
 				memcpy(map + shdr[i].sh_offset + shdr[i].sh_size, shellcode, sizeof(shellcode));
 				// ehdr->e_entry = 
 			}
+		else
+		{
+			print("This isnt working on:\n");
+			printf("Section [%2d]: %-16s offset: 0x%06lx size: %06d available space: %lu \n",
+				i, 
+				name,
+				shdr[i].sh_offset,
+				shdr[i].sh_size, 
+				shdr[i+1].sh_offset - (shdr[i].sh_offset + \
+					shdr[i].sh_size));
+			print("size of shellcode is:%d\n", sizeof(shellcode));
+		}
 	}
 }
 
@@ -397,7 +408,7 @@ int main(void)
 	// printf("text section offset [%p] and size [%d]\n", text_sheader->sh_offset, text_sheader->sh_size);
 
 	// vera shenanigans
-	inspection(header, section_headers, map, text_sheader, text_ind);
+	// inspection(header, section_headers, map, text_sheader, text_ind);
 	void *new_map = create_new_file(map);
 	inject_in_padding(new_map);
 	// inject_new_header(new_map);
