@@ -360,7 +360,7 @@ void	inject_in_padding(void *map)
 	const char *sh_strtab = map + shdr[ehdr->e_shstrndx].sh_offset;
 	const char *name = NULL;
 	 
-	for (int i = 0; i < ehdr->e_shnum; i++) {
+	for (int i = 2; i < ehdr->e_shnum; i++) {
 		name = sh_strtab + shdr[i].sh_name;
 
 		if (shdr[i+1].sh_offset - (shdr[i].sh_offset + shdr[i].sh_size)\
@@ -375,6 +375,7 @@ void	inject_in_padding(void *map)
 						shdr[i].sh_size));
 				memcpy(map + shdr[i].sh_offset + shdr[i].sh_size, shellcode, sizeof(shellcode));
 				// ehdr->e_entry = 
+				break;gi
 			}
 		else
 		{
