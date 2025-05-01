@@ -357,20 +357,24 @@ void	inject_in_padding(void *map)
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
  	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
 
-	for (int i = 0; i < header->e_shnum; i++) {
-		name = sh_strtab + section_headers_checkers[i].sh_name;
 
-		if (section_headers_checkers[i+1].sh_offset - (section_headers_checkers[i].sh_offset + section_headers_checkers[i].sh_size)\
+	const char *sh_strtab = map + shdr[header->e_shstrndx].sh_offset;
+	const char *name = NULL;
+	 
+	for (int i = 0; i < ehdr->e_shnum; i++) {
+		name = sh_strtab + shdr[i].sh_name;
+
+		if (shdr[i+1].sh_offset - (shdr[i].sh_offset + shdr[i].sh_size)\
 				>= sizeof(shellcode))
 			{
 				printf("Section [%2d]: %-16s offset: 0x%06lx size: %06d available space: %lu \n",
 					i, 
 					name,
-					section_headers_checkers[i].sh_offset,
-					section_headers_checkers[i].sh_size, 
-					section_headers_checkers[i+1].sh_offset - (section_headers_checkers[i].sh_offset + \
-						section_headers_checkers[i].sh_size));
-				memcpy(map + section_headers_checkers[i].sh_offset + section_headers_checkers[i].sh_size, shellcode, sizeof(shellcode));
+					shdr[i].sh_offset,
+					shdr[i].sh_size, 
+					shdr[i+1].sh_offset - (shdr[i].sh_offset + \
+						shdr[i].sh_size));
+				memcpy(map + shdr[i].sh_offset + shdr[i].sh_size, shellcode, sizeof(shellcode));
 				// ehdr->e_entry = 
 			}
 	}
