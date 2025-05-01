@@ -360,6 +360,7 @@ void	inject_in_padding(void *map)
 	const char *sh_strtab = map + shdr[ehdr->e_shstrndx].sh_offset;
 	const char *name = NULL;
 	 
+	// this injects the code:
 	for (int i = 2; i < ehdr->e_shnum; i++) {
 		name = sh_strtab + shdr[i].sh_name;
 
@@ -382,14 +383,21 @@ void	inject_in_padding(void *map)
 		else
 		{
 			printf("This isnt working on:\n");
-			printf("Section [%2d]: %-16s offset: 0x%06lx size: %06d available space: %lu \n",
-				i, 
-				name,
-				shdr[i].sh_offset,
-				shdr[i].sh_size, 
-				shdr[i+1].sh_offset - (shdr[i].sh_offset + \
-					shdr[i].sh_size));
+			printf("Section [%2d]: %-16s offset: 0x%06lx size: %06d available space: %lu \n", i, name,
+				shdr[i].sh_offset,shdr[i].sh_size, shdr[i+1].sh_offset - (shdr[i].sh_offset + shdr[i].sh_size));
 			printf("size of shellcode is:%d\n\n\n", sizeof(shellcode));
+		}
+	}
+
+	// this updates the memsz so that the code is still in an executable segment.
+	short	section_nbr = ehdr->e_shnum;
+
+    for (int i = section_nbr; i > 0; i--) 
+	{
+        if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X)) 
+		{
+			phdr[i].p_filesz += sizeof(shellcode);
+			phdr[i].p_memsz  += sizeof(shellcode);
 		}
 	}
 }
