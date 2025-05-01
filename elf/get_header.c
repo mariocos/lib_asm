@@ -365,22 +365,22 @@ int main(void)
 	// printf("text section offset [%p] and size [%d]\n", text_sheader->sh_offset, text_sheader->sh_size);
 
 	// vera shenanigans
-	// inspection(header, section_headers, map, text_sheader, text_ind);
-	// void *new_map = create_new_file(map);
-	// inject_new_header(new_map);
+	inspection(header, section_headers, map, text_sheader, text_ind);
+	void *new_map = create_new_file(map);
+	inject_new_header(new_map);
 
-	// printf("text section");
-	// Elf64_Ehdr	*new_header = (Elf64_Ehdr *)new_map;
-	// Elf64_Shdr	*new_section_headers = (Elf64_Shdr *)(new_map + new_header->e_shoff);
+	printf("text section");
+	Elf64_Ehdr	*new_header = (Elf64_Ehdr *)new_map;
+	Elf64_Shdr	*new_section_headers = (Elf64_Shdr *)(new_map + new_header->e_shoff);
 
-	// int	new_sheader_nbr = new_header->e_shnum;
-	// int new_sheader_size = new_header->e_shentsize;
+	int	new_sheader_nbr = new_header->e_shnum;
+	int new_sheader_size = new_header->e_shentsize;
 
 
-	// int new_text_ind = get_text_section_index(new_map, new_header);
-	// Elf64_Shdr	*new_text_sheader = (Elf64_Shdr *)&new_section_headers[new_text_ind];
-	// printf("text section offset [%p] and size [%d]\n", new_text_sheader->sh_offset, new_text_sheader->sh_size);
-	// inspection(new_header, new_section_headers, new_map, new_text_sheader, new_text_ind);
+	int new_text_ind = get_text_section_index(new_map, new_header);
+	Elf64_Shdr	*new_text_sheader = (Elf64_Shdr *)&new_section_headers[new_text_ind];
+	printf("text section offset [%p] and size [%d]\n", new_text_sheader->sh_offset, new_text_sheader->sh_size);
+	inspection(new_header, new_section_headers, new_map, new_text_sheader, new_text_ind);
 
 	check_placement_of_header_tables(map, header);
 }
