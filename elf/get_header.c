@@ -89,7 +89,7 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 	{
 		if (i != eheader->e_shstrndx)
 		{
-			printf("name of section [%s]\n", (sh_strtable + shdrs[i].sh_name ));
+			//printf("name of section [%s]\n", (sh_strtable + shdrs[i].sh_name ));
 			if (!ft_strcmp(sh_strtable + shdrs[i].sh_name, ".text"))
 				return (i);
 		}
@@ -140,9 +140,12 @@ int main(void)
 	int sheader_size = header->e_shentsize;
 
 
-	//int text_ind = get_text_section_index(map, header);
-	//Elf64_Shdr	*text_sheader = (Elf64_Shdr *)&section_headers[text_ind];
-	check_placement_of_header_tables(map, header);
+	int text_ind = get_text_section_index(map, header);
+	Elf64_Shdr	*text_sheader = (Elf64_Shdr *)&section_headers[text_ind];
+	
+	Elf64_Phdr* phdrs = (Elf64_Phdr*)(map + header->e_phoff);
+	print_header(phdrs, 64);
+
 
 
 }
