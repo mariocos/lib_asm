@@ -378,7 +378,7 @@ void	inject_in_padding(void *map)
 			}
 		else
 		{
-			print("This isnt working on:\n");
+			printf("This isnt working on:\n");
 			printf("Section [%2d]: %-16s offset: 0x%06lx size: %06d available space: %lu \n",
 				i, 
 				name,
@@ -386,7 +386,7 @@ void	inject_in_padding(void *map)
 				shdr[i].sh_size, 
 				shdr[i+1].sh_offset - (shdr[i].sh_offset + \
 					shdr[i].sh_size));
-			print("size of shellcode is:%d\n", sizeof(shellcode));
+			printf("size of shellcode is:%d\n", sizeof(shellcode));
 		}
 	}
 }
