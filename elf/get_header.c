@@ -386,7 +386,7 @@ void	inject_in_padding(void *map)
 				shdr[i].sh_size, 
 				shdr[i+1].sh_offset - (shdr[i].sh_offset + \
 					shdr[i].sh_size));
-			printf("size of shellcode is:%d\n", sizeof(shellcode));
+			printf("size of shellcode is:%d\n\n\n", sizeof(shellcode));
 		}
 	}
 }
