@@ -383,5 +383,5 @@ int main(void)
 	printf("text section offset [%p] and size [%d]\n", new_text_sheader->sh_offset, new_text_sheader->sh_size);
 	inspection(new_header, new_section_headers, new_map, new_text_sheader, new_text_ind);
 
-	check_placement_of_header_tables(map, header);
+	// check_placement_of_header_tables(map, header);
 }
