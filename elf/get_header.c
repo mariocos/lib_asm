@@ -7,6 +7,11 @@
 #include <unistd.h>
 #include <string.h>
 
+unsigned char shellcode[] = {0xb8, 0x41, 0x00, 0x00, 0x00, 0x50, 0xb8, 0x01, 0x00, 0x00, 0x00, 0xbf, 0x01, 0x00, 0x00, 0x00, 0x48, 0x89, 0xe6, 0xba, 0x01, 0x00, 0x00, 0x00, 0x0f, 0x05};
+
+
+off_t f_size;
+
 int	ft_strcmp(const char *s1, const char *s2)
 {
 	if (s1 == NULL || s2 == NULL)
@@ -25,15 +30,16 @@ void	*get_map(char *str)
 {
 	if (!str)
 		return (NULL);
-	int fd = open(str, O_RDONLY);
+	int fd = open(str, O_RDWR);
 	if (fd < 0)
 	{
 		write(2, "problem opening file\n", 21);
 		return (NULL);
 	}
-	off_t f_size = lseek(fd, 0, SEEK_END);
-	printf("the file is of size [%ld]\n", f_size);
-	void	*map = mmap(NULL, f_size, PROT_READ, MAP_PRIVATE, fd, 0);
+	f_size = lseek(fd, 0, SEEK_END);
+	// printf("the file is of size [%ld]\n", f_size);
+	ftruncate(fd, f_size + sizeof(shellcode));
+	void	*map = mmap(NULL, f_size + sizeof(shellcode), PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
 	if (map == MAP_FAILED)
 	{
 		write(2, "problem mapping file\n", 21);
@@ -97,7 +103,6 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 	return (-1);
 }
 
-unsigned char shellcode[] = {0xbb, 0x00, 0x00, 0x00, 0x00, 0xb9, 0x00, 0x00, 0x00, 0x00, 0x48, 0x83, 0xfb, 0x0a, 0x7f, 0x0e, 0x48, 0x83, 0xc3, 0x01, 0x48, 0x83, 0xc1, 0x02, 0x48, 0x83, 0xfb, 0x0a, 0x7c, 0xec, 0xb8, 0x3c, 0x00, 0x00, 0x00, 0x48, 0x89, 0xcf, 0x0f, 0x05};
 
 void check_placement_of_header_tables(void *map, Elf64_Ehdr *ehdr)
 {
@@ -127,25 +132,51 @@ void check_placement_of_header_tables(void *map, Elf64_Ehdr *ehdr)
 	}
 }
 
+typedef	struct s_update_ptrs
+{
+	/* data */
+	void	*text_section_start;
+	int		inserted_shellcode_len;
+
+} t_update_ptrs;
+
+
+void	inject_shellcode(char *map, char *text_section)
+{
+	size_t	remaining_file_size = f_size - (text_section - map);
+	memmove(text_section, text_section + sizeof(shellcode), remaining_file_size);
+	memmove(text_section, shellcode, sizeof(shellcode));
+	msync(map, (f_size + sizeof(shellcode)), MS_SYNC);
+}
+
+void	attempt(void *map, void *text_section, Elf64_Shdr *text_shdr)
+{
+	inject_shellcode(map, text_section);
+	text_shdr->sh_size += sizeof(shellcode);
+	int new_fd = open("new_file", O_CREAT | O_WRONLY | O_TRUNC, 0644);
+	write(new_fd, map, f_size + sizeof(shellcode)); // or f_size + payload_size if you've added code
+	close(new_fd);
+}
 
 int main(void)
 {
-	void *map = get_map("a.out");
+	void *map = get_map("Hello_world");
 
-	print_header(map, 64);
+	// print_header(map, 64);
 	Elf64_Ehdr	*header = (Elf64_Ehdr *)map;
 	Elf64_Shdr	*section_headers = (Elf64_Shdr *)(map + header->e_shoff);
 
 	int	sheader_nbr = header->e_shnum;
 	int sheader_size = header->e_shentsize;
 
-
 	int text_ind = get_text_section_index(map, header);
 	Elf64_Shdr	*text_sheader = (Elf64_Shdr *)&section_headers[text_ind];
-	
+	// write(1, "\n", 1); // print a shellcode
+	// print_header((map + text_sheader->sh_offset), text_sheader->sh_size);
+	// write(1, "\n", 1);
+	// return (1);
 	Elf64_Phdr* phdrs = (Elf64_Phdr*)(map + header->e_phoff);
-	print_header(phdrs, 64);
 
-
-
+	attempt(map, (map + text_sheader->sh_offset), text_sheader);
+	munmap(map, f_size + sizeof(shellcode));
 }
