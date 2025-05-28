@@ -1,9 +1,9 @@
-NAME = woody
+NAME = packer
 
 SRC_PATH = ./srcs
 OBJ_DIR = ./objs
 
-SRCS =	get_header.c
+SRCS =	main.c elf_header.c utils.c
 
 OBJ = $(SRCS:$(SRC_PATH)/%.c=$(OBJ_DIR)/%.o)
 
@@ -23,7 +23,7 @@ clean:
 	rm -rf $(OBJ_DIR)
 
 fclean: clean
-	rm -rf $(NAME)
+	rm -rf $(NAME) Hello_world ; cp based ./Hello_world
 
 re: fclean all
 
