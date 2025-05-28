@@ -55,11 +55,18 @@ typedef struct elf64_phdr {
 
 #define FILE "skip"
 
+/*unsigned char jumpShellCode[] = {
+//    0x48, 0xb8,                  // movabs rax
+0xff,
+    	0xef, 0xbe, 0xad, 0xde,      // lower 4 bytes (little endian)
+    0xbe, 0xba, 0xfe, 0xca      // upper 4 bytes (adjust this!)
+//    0xff, 0xe0                   // jmp rax
+};*/
 unsigned char jumpShellCode[] = {
-    0x48, 0xb8,                  // movabs rax
-    0xef, 0xbe, 0xad, 0xde,      // lower 4 bytes (little endian)
-    0xbe, 0xba, 0xfe, 0xca,      // upper 4 bytes (adjust this!)
-    0xff, 0xe0                   // jmp rax
+    0x48, 0xb8,              // movabs rax, <address>
+    0x60, 0x10, 0x00, 0x00,  // Little-endian 0x1060
+    0x00, 0x00, 0x00, 0x00,  //
+    0xff, 0xe0               // jmp rax
 };
 
 unsigned char baseShellCode[] = {0xb8, 0x41, 0x00, 0x00, 0x00, 0x50, 0xb8, 0x01, 0x00, 0x00, 0x00, \
@@ -134,7 +141,7 @@ void	iterate_sheaders(void *map, Elf64_Ehdr *eheader)
 	Elf64_Shdr *sheader = (Elf64_Shdr *)(map + eheader->e_shoff);
 	int	str_ind = eheader->e_shstrndx;
 	printf("the strheader index is %d out of %d\n", str_ind, eheader->e_shnum);
-	printf("section size is %d\n",sheader[str_ind].sh_size);
+//	printf("section size is %d\n",sheader[str_ind].sh_size);
 	print_header(map + sheader[str_ind].sh_offset, sheader[str_ind].sh_size);
 }
 
@@ -142,8 +149,8 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 {
 	int	section_nbr = eheader->e_shnum;
 	Elf64_Shdr *shdrs = (Elf64_Shdr *)(map + eheader->e_shoff);
-	Elf64_Shdr *sh_table = &shdrs[eheader->e_shstrndx];
-	int	sh_table_offset = sh_table->sh_offset;
+//	Elf64_Shdr *sh_table = &shdrs[eheader->e_shstrndx];
+//	int	sh_table_offset = sh_table->sh_offset;
 	char *sh_strtable = map + shdrs[eheader->e_shstrndx].sh_offset;
 
 
@@ -155,7 +162,7 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 			{
 				printf("text at .text: ");
 				for (unsigned long i = 0; i <= shdrs[i].sh_size; i++)
-					printf("0x%02x ", (unsigned char*)(map + shdrs[i].sh_offset + i));
+	//				printf("0x%02x ", (unsigned char*)(map + shdrs[i].sh_offset + i));
 				printf("\n");
 				return (i);
 			}
@@ -165,40 +172,25 @@ int get_text_section_index(void *map, Elf64_Ehdr *eheader)
 }
 
 
-void	inspection(Elf64_Ehdr *header, Elf64_Shdr *section_headers,  void *map, Elf64_Shdr *text_sheader, int text_ind)
+/*void	inspection(Elf64_Ehdr *header, Elf64_Shdr *section_headers,  void *map, Elf64_Shdr *text_sheader, int text_ind)
 {
-	Elf64_Addr	entry_point = header->e_entry; // get entry-point of elf, aka where code starts to run
+//	Elf64_Addr	entry_point = header->e_entry; // get entry-point of elf, aka where code starts to run
 	print_header((map + text_sheader->sh_offset), text_sheader->sh_size);
-	printf("Original entry point: 0x%lx\n", entry_point); // testing just to make sure it can be found
 	
-	Elf64_Shdr next_section = section_headers[text_ind + 1]; // (not sure about this naming?)
-	printf(".text file offset: 0x%lx\n", text_sheader->sh_offset);
-	printf(".text next section offset: 0x%lx\n", next_section.sh_offset);
-	printf(".text size: 0x%x\n", text_sheader->sh_size);
-	size_t space = next_section.sh_offset - (text_sheader->sh_offset + text_sheader->sh_size);
-	printf("Available padding after .text: %lu bytes\n", space);
-
-	// checkers to see if the file has been stripped completely (meaning there is no section headers)
-	// if stuff is at 0 it means it has been stripped, otherwise its healthy
-	printf("Section header offset: 0x%lx\n", header->e_shoff);
-	printf("Number of section headers: %d\n", header->e_shnum);
-	printf("Section header string table index: %d\n", header->e_shstrndx);
-
-	// checker to dump all of the sections and make sure there is no missunderstanding with the .text
-	// this should verify if the index function is working properly
+//	Elf64_Shdr next_section = section_headers[text_ind + 1]; // (not sure about this naming?)
 	Elf64_Shdr *section_headers_checkers = (Elf64_Shdr *)(map + header->e_shoff);
 	const char *sh_strtab = map + section_headers_checkers[header->e_shstrndx].sh_offset;
-	const char *name = NULL;
+//	const char *name = NULL;
 
 	for (int i = 0; i < header->e_shnum; i++) {
 		name = sh_strtab + section_headers_checkers[i].sh_name;
-		printf("Section [%2d]: %-16s offset: 0x%06lx size: %06d available space: %lu \n",
-	    	i, name, section_headers_checkers[i].sh_offset, section_headers_checkers[i].sh_size, 
-			section_headers_checkers[i+1].sh_offset - (section_headers_checkers[i].sh_offset + \
-				section_headers_checkers[i].sh_size));
+//		printf("Section [%2d]: %-16s offset: 0x%06lx size: %06d available space: %lu \n",
+//	    	i, name, section_headers_checkers[i].sh_offset, section_headers_checkers[i].sh_size, 
+//			section_headers_checkers[i+1].sh_offset - (section_headers_checkers[i].sh_offset + \
+//				section_headers_checkers[i].sh_size));
 	}
 }
-
+*/
 void *create_new_file(void *old_map)
 {
 	int fd = open(FILE, O_RDONLY);
@@ -250,8 +242,8 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 	Elf64_Off inject_shellcode_offset; // added for more code clarity, TODO: take it off maybe?
 
 	// For debug purposes
-	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
-	char *shstrtab = (char *)(map + shdr[ehdr->e_shstrndx].sh_offset);
+//	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
+//	char *shstrtab = (char *)(map + shdr[ehdr->e_shstrndx].sh_offset);
 
 	short	section_nbr = ehdr->e_shnum;
 
@@ -278,7 +270,7 @@ void update_phdr(void *map, Elf64_Ehdr *ehdr, Elf64_Shdr *new_shdr)
 void addJump(Elf64_Addr ogEntry)
 {
 	uint64_t orig_entry = ogEntry;
-	memcpy(jumpShellCode + 2, &orig_entry, sizeof(orig_entry));
+//	memcpy(jumpShellCode + 1, &ogEntry, sizeof(ogEntry));
 
 	memcpy(shellcode, baseShellCode, sizeof(baseShellCode));
 	memcpy(shellcode + sizeof(baseShellCode), jumpShellCode, sizeof(jumpShellCode));
@@ -288,12 +280,17 @@ void addJump(Elf64_Addr ogEntry)
 void	inject_new_header(void *map)
 {
 	Elf64_Ehdr *ehdr = (Elf64_Ehdr *)map;
-	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
+//	Elf64_Shdr *shdr = (Elf64_Shdr *)(map + ehdr->e_shoff);
 	Elf64_Addr ogEntry = ehdr->e_entry;
 
-	addJump(ogEntry);
+	addJump(ogEntry);    
+	uint64_t test = ogEntry;
+	printf("Entry point address: 0x%lx\n", ehdr->e_entry);
+	printf("Entry point address: 0x%lx\n", ogEntry);
 
-	off_t shellcode_offset = size_of_file - sizeof(shellcode) - sizeof(Elf64_Shdr);
+
+
+//	off_t shellcode_offset = size_of_file - sizeof(shellcode) - sizeof(Elf64_Shdr);
 	
 		// this should be sec of map + offset till section headers + number of section headers * size (typically 64 cuz 64ELF)
 	Elf64_Shdr *new_shdr = (Elf64_Shdr *)(map + ehdr->e_shoff + (ehdr->e_shnum * sizeof(Elf64_Shdr)));
@@ -319,34 +316,34 @@ int main(void)
 	void *map = get_map(FILE);
 
 	// print_header(map, 64);
-	Elf64_Ehdr	*header = (Elf64_Ehdr *)map;
-	Elf64_Shdr	*section_headers = (Elf64_Shdr *)(map + header->e_shoff);
+//	Elf64_Ehdr	*header = (Elf64_Ehdr *)map;
+//	Elf64_Shdr	*section_headers = (Elf64_Shdr *)(map + header->e_shoff);
 
-	int	sheader_nbr = header->e_shnum;
-	int sheader_size = header->e_shentsize;
+//	int	sheader_nbr = header->e_shnum;
+//	int sheader_size = header->e_shentsize;
 
 
-	int text_ind = get_text_section_index(map, header);
-	Elf64_Shdr	*text_sheader = (Elf64_Shdr *)&section_headers[text_ind];
+//	int text_ind = get_text_section_index(map, header);
+//	Elf64_Shdr	*text_sheader = (Elf64_Shdr *)&section_headers[text_ind];
 	// printf("text section offset [%p] and size [%d]\n", text_sheader->sh_offset, text_sheader->sh_size);
 
 	// vera shenanigans
-	inspection(header, section_headers, map, text_sheader, text_ind);
+	//inspection(header, section_headers, map, text_sheader, text_ind);
 	void *new_map = create_new_file(map);
 	inject_new_header(new_map);
 
 	printf("text section");
-	Elf64_Ehdr	*new_header = (Elf64_Ehdr *)new_map;
-	Elf64_Shdr	*new_section_headers = (Elf64_Shdr *)(new_map + new_header->e_shoff);
+//	Elf64_Ehdr	*new_header = (Elf64_Ehdr *)new_map;
+//	Elf64_Shdr	*new_section_headers = (Elf64_Shdr *)(new_map + new_header->e_shoff);
 
-	int	new_sheader_nbr = new_header->e_shnum;
-	int new_sheader_size = new_header->e_shentsize;
+//	int	new_sheader_nbr = new_header->e_shnum;
+//	int new_sheader_size = new_header->e_shentsize;
 
 
-	int new_text_ind = get_text_section_index(new_map, new_header);
-	Elf64_Shdr	*new_text_sheader = (Elf64_Shdr *)&new_section_headers[new_text_ind];
-	printf("text section offset [%p] and size [%d]\n", new_text_sheader->sh_offset, new_text_sheader->sh_size);
-	inspection(new_header, new_section_headers, new_map, new_text_sheader, new_text_ind);
+//	int new_text_ind = get_text_section_index(new_map, new_header);
+//	Elf64_Shdr	*new_text_sheader = (Elf64_Shdr *)&new_section_headers[new_text_ind];
+//	printf("text section offset [%p] and size [%d]\n", new_text_sheader->sh_offset, new_text_sheader->sh_size);
+	//inspection(new_header, new_section_headers, new_map, new_text_sheader, new_text_ind);
 
 	// check_placement_of_header_tables(map, header);
 }
