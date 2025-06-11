@@ -3,6 +3,7 @@
 void	parse_header(t_ptrs *ptrs_to_old, t_offsets *ptrs_to_update, void *map, int new_file_fd)
 {
 	Elf64_Ehdr* E_hdr = (Elf64_Ehdr*)map;
+	ptrs_to_old->Ehdr = E_hdr;
 
 
 	ptrs_to_update->e_phnum = E_hdr->e_phnum;

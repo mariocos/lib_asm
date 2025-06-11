@@ -25,7 +25,10 @@ int main(int argc, char **argv)
 
 	//parse header
 	parse_header(&ptrs_to_old, &ptrs_to_update, map, new_file_fd);
-	
 	ptrs_to_update.bites_written = write(new_file_fd, (char*)(map + sizeof(Elf64_Ehdr)), (ptrs_to_old.E_shoff - 64));
 
+	//parse program headers
+	
+
+	
 }

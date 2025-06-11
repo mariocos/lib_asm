@@ -23,6 +23,6 @@ void	*get_map(char *str)
 int	get_new_file_fd(char *str)
 {
 	char new_file_name[6] = "woody";
-	int fd = open(new_file_name, O_WRONLY | O_CREAT | O_APPEND, 0644);
+	int fd = open(new_file_name, O_WRONLY | O_CREAT | O_APPEND, 0644cl);
 	return (fd);
 }
