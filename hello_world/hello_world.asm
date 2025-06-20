@@ -6,10 +6,11 @@ section .data
 section .text
 	global _start
 _start:
-	mov rax, 65
-	push rax
 	mov rax, 1; move write syscall into eax
 	mov rdi, 1; specify fd 1
-	mov rsi, rsp
-	mov rdx, 1
+	mov rsi, message
+	mov rdx, message_len
+	syscall
+	mov rax, 60
+	mov rdi, 1
 	syscall
