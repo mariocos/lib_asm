@@ -12,5 +12,5 @@ _start:
 	mov rdx, message_len
 	syscall
 	mov rax, 60
-	mov rdi, 0
+	mov rdi, 1
 	syscall
