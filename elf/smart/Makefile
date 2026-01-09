@@ -8,7 +8,7 @@ SRCS =	main.c utils.c
 OBJ = $(SRCS:$(SRC_PATH)/%.c=$(OBJ_DIR)/%.o)
 
 CC = cc
-CFLAGS = 
+CFLAGS = -g
 
 all: $(NAME)
 

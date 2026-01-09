@@ -27,9 +27,15 @@ typedef struct s_ranges
 	/* important ranges */
 	size_t	segmentSize;
 	size_t	segmentStart;
+	size_t	segmentEnd;
 
 	size_t	sectionsInSegment;
 	
+	int		firstSectionInSegment;
+	int		lastSectionInSegment;
+
+	size_t codeCaveSz;
+	int		sectionAfterText;
 
 	size_t phnum;
 	size_t shnum;
@@ -44,7 +50,7 @@ int	get_new_file_fd(char *str);
 
 
 int	ft_strcmp(const char *s1, const char *s2);
-
+void writeHex(unsigned char c);
 
 
 

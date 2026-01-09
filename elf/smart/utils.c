@@ -42,3 +42,13 @@ int	ft_strcmp(const char *s1, const char *s2)
 	}
 	return (*(const unsigned char *)s1 - *(const unsigned char *)s2);
 }
+
+void writeHex(unsigned char c)
+{
+	unsigned char div, rest = 0;
+	div = c / 16 + '0';
+	rest = c % 16 + '0';
+	write(1, "0x", 2);
+	write(1, &div, 1);
+	write(1, &rest, 1);
+}
