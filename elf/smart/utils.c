@@ -22,7 +22,23 @@ void	*get_map(char *str)
 
 int	get_new_file_fd(char *str)
 {
+	(void)str;//TODO: append this to file name
 	char new_file_name[6] = "woody";
-	int fd = open(new_file_name, O_WRONLY | O_CREAT | O_APPEND, 0644cl);
+	int fd = open(new_file_name, O_WRONLY | O_CREAT | O_APPEND, 0644);
 	return (fd);
+}
+
+
+int	ft_strcmp(const char *s1, const char *s2)
+{
+	if (s1 == NULL || s2 == NULL)
+		return (0);
+	while (*s1 && *s2 && (*s1 == *s2))
+	{
+		if (!*s1 || !*s2)
+			break ;
+		s1++;
+		s2++;
+	}
+	return (*(const unsigned char *)s1 - *(const unsigned char *)s2);
 }

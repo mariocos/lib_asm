@@ -3,7 +3,7 @@ NAME = packer
 SRC_PATH = ./srcs
 OBJ_DIR = ./objs
 
-SRCS =	main.c elf_header.c utils.c
+SRCS =	main.c utils.c
 
 OBJ = $(SRCS:$(SRC_PATH)/%.c=$(OBJ_DIR)/%.o)
 
@@ -23,7 +23,7 @@ clean:
 	rm -rf $(OBJ_DIR)
 
 fclean: clean
-	rm -rf $(NAME) Hello_world ; cp based ./Hello_world
+	rm -rf $(NAME)
 
 re: fclean all
 
