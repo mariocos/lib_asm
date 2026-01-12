@@ -1,0 +1,177 @@
+
+Test:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+0000000000001000 <_init>:
+    1000:	f3 0f 1e fa          	endbr64
+    1004:	48 83 ec 08          	sub    $0x8,%rsp
+    1008:	48 8b 05 d9 2f 00 00 	mov    0x2fd9(%rip),%rax        # 3fe8 <__gmon_start__@Base>
+    100f:	48 85 c0             	test   %rax,%rax
+    1012:	74 02                	je     1016 <_init+0x16>
+    1014:	ff d0                	call   *%rax
+    1016:	48 83 c4 08          	add    $0x8,%rsp
+    101a:	c3                   	ret
+
+Disassembly of section .plt:
+
+0000000000001020 <.plt>:
+    1020:	ff 35 9a 2f 00 00    	push   0x2f9a(%rip)        # 3fc0 <_GLOBAL_OFFSET_TABLE_+0x8>
+    1026:	ff 25 9c 2f 00 00    	jmp    *0x2f9c(%rip)        # 3fc8 <_GLOBAL_OFFSET_TABLE_+0x10>
+    102c:	0f 1f 40 00          	nopl   0x0(%rax)
+    1030:	f3 0f 1e fa          	endbr64
+    1034:	68 00 00 00 00       	push   $0x0
+    1039:	e9 e2 ff ff ff       	jmp    1020 <_init+0x20>
+    103e:	66 90                	xchg   %ax,%ax
+
+Disassembly of section .plt.got:
+
+0000000000001040 <__cxa_finalize@plt>:
+    1040:	f3 0f 1e fa          	endbr64
+    1044:	ff 25 ae 2f 00 00    	jmp    *0x2fae(%rip)        # 3ff8 <__cxa_finalize@GLIBC_2.2.5>
+    104a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+Disassembly of section .plt.sec:
+
+0000000000001050 <puts@plt>:
+    1050:	f3 0f 1e fa          	endbr64
+    1054:	ff 25 76 2f 00 00    	jmp    *0x2f76(%rip)        # 3fd0 <puts@GLIBC_2.2.5>
+    105a:	66 0f 1f 44 00 00    	nopw   0x0(%rax,%rax,1)
+
+Disassembly of section .text:
+
+0000000000001060 <_start>:
+    1060:	0a 1b                	or     (%rbx),%bl
+    1062:	06                   	(bad)
+    1063:	6b 36 0d             	imul   $0xd,(%rsi),%esi
+    1066:	cf                   	iret
+    1067:	a6                   	cmpsb  %es:(%rdi),%ds:(%rsi)
+    1068:	95                   	xchg   %eax,%ebp
+    1069:	d5 e8 2e 23          	{rex2 0xe8} ucomiss (%rbx),%xmm4
+    106d:	73 1c                	jae    108b <_start+0x2b>
+    106f:	5c                   	pop    %rsp
+    1070:	9c                   	pushf
+    1071:	e5 cd                	in     $0xcd,%eax
+    1073:	26 cf                	es iret
+    1075:	3b a3 d2 05 a4 16    	cmp    0x16a405d2(%rbx),%esp
+    107b:	b9 68 36 0a 05       	mov    $0x50a3668,%ecx
+    1080:	0f 8a 18 45 80 86    	jp     ffffffff8680559e <_end+0xffffffff86801586>
+    1086:	56                   	push   %rsi
+    1087:	4f 28 7e d9          	rex.WRXB sub %r15b,-0x27(%r14)
+    108b:	92                   	xchg   %eax,%edx
+    108c:	4b c2 22 29          	rex.WXB ret $0x2922
+
+0000000000001090 <deregister_tm_clones>:
+    1090:	e7 87                	out    %eax,$0x87
+    1092:	ec                   	in     (%dx),%al
+    1093:	6d                   	insl   (%dx),%es:(%rdi)
+    1094:	31 e1                	xor    %esp,%ecx
+    1096:	28 24 9d 28 87 df 90 	sub    %ah,-0x6f2078d8(,%rbx,4)
+    109d:	fa                   	cli
+    109e:	54                   	push   %rsp
+    109f:	31 8d 6c 3a 62 c0    	xor    %ecx,-0x3f9dc594(%rbp)
+    10a5:	3a ba 9c 06 be 4c    	cmp    0x4cbe069c(%rdx),%bh
+    10ab:	35 c2 e7 77 0a       	xor    $0xa77e7c2,%eax
+    10b0:	56                   	push   %rsi
+    10b1:	6a 42                	push   $0x42
+    10b3:	ef                   	out    %eax,(%dx)
+    10b4:	2b f5                	sub    %ebp,%esi
+    10b6:	94                   	xchg   %eax,%esp
+    10b7:	7b 20                	jnp    10d9 <register_tm_clones+0x19>
+    10b9:	58                   	pop    %rax
+    10ba:	a3                   	.byte 0xa3
+    10bb:	c7                   	(bad)
+    10bc:	fe                   	(bad)
+    10bd:	23 1e                	and    (%rsi),%ebx
+    10bf:	7e                   	.byte 0x7e
+
+00000000000010c0 <register_tm_clones>:
+    10c0:	68 0b fa 33 ce       	push   $0xffffffffce33fa0b
+    10c5:	dd b3 9f bf 1e c3    	fnsave -0x3ce14061(%rbx)
+    10cb:	2f                   	(bad)
+    10cc:	e9 cc 4d fa d3       	jmp    ffffffffd3fa5e9d <_end+0xffffffffd3fa1e85>
+    10d1:	d7                   	xlat   %ds:(%rbx)
+    10d2:	10 65 f1             	adc    %ah,-0xf(%rbp)
+    10d5:	f9                   	stc
+    10d6:	e7 1d                	out    %eax,$0x1d
+    10d8:	7a e7                	jp     10c1 <register_tm_clones+0x1>
+    10da:	fa                   	cli
+    10db:	d5 93 6b 28          	{rex2 0x93} packssdw (%r24),%mm5
+    10df:	a6                   	cmpsb  %es:(%rdi),%ds:(%rsi)
+    10e0:	7e 3b                	jle    111d <__do_global_dtors_aux+0x1d>
+    10e2:	5c                   	pop    %rsp
+    10e3:	ec                   	in     (%dx),%al
+    10e4:	c7                   	(bad)
+    10e5:	3b ec                	cmp    %esp,%ebp
+    10e7:	cf                   	iret
+    10e8:	6e                   	outsb  %ds:(%rsi),(%dx)
+    10e9:	92                   	xchg   %eax,%edx
+    10ea:	ab                   	stos   %eax,%es:(%rdi)
+    10eb:	2f                   	(bad)
+    10ec:	a4                   	movsb  %ds:(%rsi),%es:(%rdi)
+    10ed:	8d 82 2c 4f 8e 53    	lea    0x538e4f2c(%rdx),%eax
+    10f3:	ea                   	(bad)
+    10f4:	fc                   	cld
+    10f5:	f7 42 28 37 4e 0a 91 	testl  $0x910a4e37,0x28(%rdx)
+    10fc:	5b                   	pop    %rbx
+    10fd:	65                   	gs
+    10fe:	e8                   	.byte 0xe8
+    10ff:	99                   	cltd
+
+0000000000001100 <__do_global_dtors_aux>:
+    1100:	53                   	push   %rbx
+    1101:	c9                   	leave
+    1102:	31 a1 30 1c f3 85    	xor    %esp,-0x7a0ce3d0(%rcx)
+    1108:	57                   	push   %rdi
+    1109:	5e                   	pop    %rsi
+    110a:	60                   	(bad)
+    110b:	cf                   	iret
+    110c:	d0 90 c8 e1 2f 9d    	rclb   $1,-0x62d01e38(%rax)
+    1112:	9b                   	fwait
+    1113:	f8                   	clc
+    1114:	2a bd b1 16 28 68    	sub    0x682816b1(%rbp),%bh
+    111a:	94                   	xchg   %eax,%esp
+    111b:	1e                   	(bad)
+    111c:	6d                   	insl   (%dx),%es:(%rdi)
+    111d:	d4                   	(bad)
+    111e:	33 62 ae             	xor    -0x52(%rdx),%esp
+    1121:	d1 7b cc             	sarl   $1,-0x34(%rbx)
+    1124:	b2 77                	mov    $0x77,%dl
+    1126:	40 6f                	rex outsl %ds:(%rsi),(%dx)
+    1128:	2d 87 7d af b1       	sub    $0xb1af7d87,%eax
+    112d:	2b 12                	sub    (%rdx),%edx
+    112f:	67 17                	addr32 (bad)
+    1131:	f9                   	stc
+    1132:	a1 bb 9f 26 44 8b 13 	movabs 0xe1c138b44269fbb,%eax
+    1139:	1c 0e 
+    113b:	47 55                	rex.RXB push %r13
+    113d:	1b 78 b3             	sbb    -0x4d(%rax),%edi
+
+0000000000001140 <frame_dummy>:
+    1140:	10 50 cf             	adc    %dl,-0x31(%rax)
+    1143:	9f                   	lahf
+    1144:	d3                   	.byte 0xd3
+    1145:	92                   	xchg   %eax,%edx
+    1146:	07                   	(bad)
+    1147:	40                   	rex
+    1148:	c6                   	.byte 0xc6
+
+0000000000001149 <main>:
+    1149:	27                   	(bad)
+    114a:	89 9d a8 74 17 7b    	mov    %ebx,0x7b1774a8(%rbp)
+    1150:	82                   	(bad)
+    1151:	8f c4                	pop    %rsp
+    1153:	2e 85 1f             	cs test %ebx,(%rdi)
+    1156:	c0 57 72 55          	rclb   $0x55,0x72(%rdi)
+    115a:	bb bc 1b 92 6a       	mov    $0x6a921bbc,%ebx
+    115f:	47                   	rex.RXB
+    1160:	4d 2a 81 38 63 2e 79 	rex.WRB sub 0x792e6338(%r9),%r8b
+
+Disassembly of section .fini:
+
+0000000000001168 <_fini>:
+    1168:	f3 0f 1e fa          	endbr64
+    116c:	48 83 ec 08          	sub    $0x8,%rsp
+    1170:	48 83 c4 08          	add    $0x8,%rsp
+    1174:	c3                   	ret
