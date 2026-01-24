@@ -1,5 +1,6 @@
 NAME = lib_asm.a
-SRCS = src/ft_strlen.s
+SRCS = src/ft_strlen.s \
+		src/ft_strcpy.s
 OBJ = $(SRCS:.s=.o)
 
 ASM = nasm

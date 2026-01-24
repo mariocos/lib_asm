@@ -3,4 +3,9 @@
 int main()
 {
 	printf("ret is [%d]\n", ft_strlen(NULL));
+
+	char dest[10] = {0};
+	char src[] = "ola";
+	ft_strcpy(dest, src);
+	printf("return , str1[%s]\n", dest);
 }
