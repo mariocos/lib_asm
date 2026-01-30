@@ -1,6 +1,9 @@
 NAME = lib_asm.a
 SRCS = src/ft_strlen.s \
-		src/ft_strcpy.s
+		src/ft_strcpy.s \
+		src/ft_write.s \
+		src/ft_read.s
+
 OBJ = $(SRCS:.s=.o)
 
 ASM = nasm
@@ -17,3 +20,5 @@ $(NAME): $(OBJ)
 
 clean:
 	rm -f $(OBJ) $(NAME)
+
+re: clean all

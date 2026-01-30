@@ -8,4 +8,6 @@ int main()
 	char src[] = "ola";
 	ft_strcpy(dest, src);
 	printf("return , str1[%s]\n", dest);
+
+	ft_write(1, "Hello World!\n", 13);
 }

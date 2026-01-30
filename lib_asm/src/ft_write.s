@@ -1,4 +1,6 @@
+default rel
 global ft_write
+extern __errno_location
 
 ft_write:
 
@@ -11,7 +13,7 @@ ft_write:
 	neg rax
 	mov rcx, rax
 
-	call errno_location
+	call __errno_location wrt ..plt 
 	mov [rax], rcx
 
 	mov rax, -1 ; this way write returns a negative value on error
