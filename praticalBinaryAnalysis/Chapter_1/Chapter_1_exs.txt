@@ -1,0 +1,57 @@
+Ex-1
+Compile a program with multiple functions down to assembly and executable.
+Try to identify the functions and what they do in the assembly and in the binary.
+Then strip the binary and try again.
+
+M- I am going to use the ASCII snake game i made a couple months ago since it has
+some functions but not too many and i somewhat remember what i coded.
+
+Starting from the source file snake.c im going to compile down to assembly with:
+>gcc -S -masm=intel sake.c -o snake.asm
+
+i also got the ELF binary by simply compiling it
+>gcc snake.c -o snake.bin
+
+and i then created a stripped version with
+>strip --strip-all snake.bin -o snake.stripped.bin
+
+Theese are all in the srcs folder.
+
+Starting with the assembly code snake.asm
+
+The assembly file is read quite easily with a initial section containing all the global data for the program.
+The Functions retain their symbolic names and are easily identifiable.
+It is also very easy to see when the functions are called or when the global data is read or written to
+
+It is surprisingly easy to understand what is happpening when you have the symbols!
+
+Moving on to the binary.
+I will put the comands i use here but the results of theese comands will be in files in the solutions folder.
+
+My first idea is to start by identifying the type of binary(even though i already know because icreated it)
+
+I will start with the file comands
+>file snake.bin
+
+This yielded alot of info. i will now try to print the data sections
+>objdump -M intel -d snake.bin > snake.bin.Dumped
+
+this yielded a good way to read the assembly it is very similiar to just reading the original assembly file however i am not seeing
+the global data.
+>objdump -sj .rodata snake.bin
+
+Doing this for .data and .rodata proves to be very usefull but it seems other globals that were present in the orignal asm file
+have either been optimised out of the binary or i am not finding them
+
+It seems they were optimised out i also checked the .bss section but it seems to be empty.
+
+This leaves me with the stripped binary.
+i am not really sure how im going to manage to identify the functions and other information
+
+going into more detail reading this disassembled binary even with the symbols it becomes alot harder to follow the logic of the code
+since alot of the sections are no longer labeled and fall through logic is now implicit not explicit
+which makes it alot harder to read and understand the flow of the program
+
+The stripped version will probably be brutal in comparison to this.
+Pairing static analys with dynamic is going to be necessary once the symbols are no longer there.
+my idea is to start slowly adding symbols back to atleast see where exits returns and calls are happening and to what.

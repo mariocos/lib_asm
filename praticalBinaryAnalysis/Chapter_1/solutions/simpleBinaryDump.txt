@@ -1,0 +1,16 @@
+>file snake.bin
+srcs/snake.bin: ELF 64-bit LSB pie executable // this means its in least significant byte ordering is Position Independent executable
+// its in the ELF 64 bit format
+
+, x86-64
+// 64 bit architecture
+
+, version 1 (SYSV), 
+
+dynamically linked,
+// contains calls to dynamic librarys
+
+ interpreter /lib64/ld-linux-x86-64.so.2, BuildID[sha1]=3a16e8f8bb77579f7f633f7414a3027d7a66c8ca, for GNU/Linux 3.2.0,
+ 
+ not stripped
+ // is not stripped
