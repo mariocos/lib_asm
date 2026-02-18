@@ -55,3 +55,21 @@ which makes it alot harder to read and understand the flow of the program
 The stripped version will probably be brutal in comparison to this.
 Pairing static analys with dynamic is going to be necessary once the symbols are no longer there.
 my idea is to start slowly adding symbols back to atleast see where exits returns and calls are happening and to what.
+
+I am able to identify the functions because i know this was compiled with gcc and was C code so every function starts with "push   rbp"
+another clue i was able to check was the "call" instruction which led me to either to calls to dynamic librarys or function calls.
+by following jumps inside functions i was able to start reconstructing logic blocks in assembly.
+
+Question2:
+1-why do you think a distintion between data sections and code sections exists?
+2-how do you think the loading process differs?
+3-do all sections need to be loaded into memory?
+
+1- I think its very convenient to have different sections for data and code, and even more between different types of data. this way memory usage can be optimised.
+also there must be different permissions for diferent sections when mapped, some need read others write or both. as well as some memory is flagged for execution.
+
+2- some sections are loaded with diferent permissions and protections. but more than that some sections need to be loaded first and then others.
+as well as some are loaded further along program runtime due to optimization.
+
+3- i have done already a project with the ELF format and i know theres sections that are not necessary for runtime at all. like the string table section. which holds
+the names of other sections.

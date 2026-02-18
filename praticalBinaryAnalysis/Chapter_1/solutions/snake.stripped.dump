@@ -1,0 +1,605 @@
+
+Chapter_1/srcs/snake.stripped.bin:     file format elf64-x86-64
+
+
+Disassembly of section .init:
+
+0000000000001000 <.init>:
+    1000:	f3 0f 1e fa          	endbr64
+    1004:	48 83 ec 08          	sub    rsp,0x8
+    1008:	48 8b 05 d9 2f 00 00 	mov    rax,QWORD PTR [rip+0x2fd9]        # 3fe8 <rand@plt+0x2ed8>
+    100f:	48 85 c0             	test   rax,rax
+    1012:	74 02                	je     1016 <__cxa_finalize@plt-0x8a>
+    1014:	ff d0                	call   rax
+    1016:	48 83 c4 08          	add    rsp,0x8
+    101a:	c3                   	ret
+
+Disassembly of section .plt:
+
+0000000000001020 <.plt>:
+    1020:	ff 35 6a 2f 00 00    	push   QWORD PTR [rip+0x2f6a]        # 3f90 <rand@plt+0x2e80>
+    1026:	ff 25 6c 2f 00 00    	jmp    QWORD PTR [rip+0x2f6c]        # 3f98 <rand@plt+0x2e88>
+    102c:	0f 1f 40 00          	nop    DWORD PTR [rax+0x0]
+    1030:	f3 0f 1e fa          	endbr64
+    1034:	68 00 00 00 00       	push   0x0
+    1039:	e9 e2 ff ff ff       	jmp    1020 <__cxa_finalize@plt-0x80>
+    103e:	66 90                	xchg   ax,ax
+    1040:	f3 0f 1e fa          	endbr64
+    1044:	68 01 00 00 00       	push   0x1
+    1049:	e9 d2 ff ff ff       	jmp    1020 <__cxa_finalize@plt-0x80>
+    104e:	66 90                	xchg   ax,ax
+    1050:	f3 0f 1e fa          	endbr64
+    1054:	68 02 00 00 00       	push   0x2
+    1059:	e9 c2 ff ff ff       	jmp    1020 <__cxa_finalize@plt-0x80>
+    105e:	66 90                	xchg   ax,ax
+    1060:	f3 0f 1e fa          	endbr64
+    1064:	68 03 00 00 00       	push   0x3
+    1069:	e9 b2 ff ff ff       	jmp    1020 <__cxa_finalize@plt-0x80>
+    106e:	66 90                	xchg   ax,ax
+    1070:	f3 0f 1e fa          	endbr64
+    1074:	68 04 00 00 00       	push   0x4
+    1079:	e9 a2 ff ff ff       	jmp    1020 <__cxa_finalize@plt-0x80>
+    107e:	66 90                	xchg   ax,ax
+    1080:	f3 0f 1e fa          	endbr64
+    1084:	68 05 00 00 00       	push   0x5
+    1089:	e9 92 ff ff ff       	jmp    1020 <__cxa_finalize@plt-0x80>
+    108e:	66 90                	xchg   ax,ax
+    1090:	f3 0f 1e fa          	endbr64
+    1094:	68 06 00 00 00       	push   0x6
+    1099:	e9 82 ff ff ff       	jmp    1020 <__cxa_finalize@plt-0x80>
+    109e:	66 90                	xchg   ax,ax
+
+Disassembly of section .plt.got:
+
+00000000000010a0 <__cxa_finalize@plt>:
+    10a0:	f3 0f 1e fa          	endbr64
+    10a4:	ff 25 4e 2f 00 00    	jmp    QWORD PTR [rip+0x2f4e]        # 3ff8 <rand@plt+0x2ee8>
+    10aa:	66 0f 1f 44 00 00    	nop    WORD PTR [rax+rax*1+0x0]
+
+Disassembly of section .plt.sec:
+
+00000000000010b0 <write@plt>:
+    10b0:	f3 0f 1e fa          	endbr64
+    10b4:	ff 25 e6 2e 00 00    	jmp    QWORD PTR [rip+0x2ee6]        # 3fa0 <rand@plt+0x2e90>
+    10ba:	66 0f 1f 44 00 00    	nop    WORD PTR [rax+rax*1+0x0]
+
+00000000000010c0 <system@plt>:
+    10c0:	f3 0f 1e fa          	endbr64
+    10c4:	ff 25 de 2e 00 00    	jmp    QWORD PTR [rip+0x2ede]        # 3fa8 <rand@plt+0x2e98>
+    10ca:	66 0f 1f 44 00 00    	nop    WORD PTR [rax+rax*1+0x0]
+
+00000000000010d0 <read@plt>:
+    10d0:	f3 0f 1e fa          	endbr64
+    10d4:	ff 25 d6 2e 00 00    	jmp    QWORD PTR [rip+0x2ed6]        # 3fb0 <rand@plt+0x2ea0>
+    10da:	66 0f 1f 44 00 00    	nop    WORD PTR [rax+rax*1+0x0]
+
+00000000000010e0 <srand@plt>:
+    10e0:	f3 0f 1e fa          	endbr64
+    10e4:	ff 25 ce 2e 00 00    	jmp    QWORD PTR [rip+0x2ece]        # 3fb8 <rand@plt+0x2ea8>
+    10ea:	66 0f 1f 44 00 00    	nop    WORD PTR [rax+rax*1+0x0]
+
+00000000000010f0 <time@plt>:
+    10f0:	f3 0f 1e fa          	endbr64
+    10f4:	ff 25 c6 2e 00 00    	jmp    QWORD PTR [rip+0x2ec6]        # 3fc0 <rand@plt+0x2eb0>
+    10fa:	66 0f 1f 44 00 00    	nop    WORD PTR [rax+rax*1+0x0]
+
+0000000000001100 <exit@plt>:
+    1100:	f3 0f 1e fa          	endbr64
+    1104:	ff 25 be 2e 00 00    	jmp    QWORD PTR [rip+0x2ebe]        # 3fc8 <rand@plt+0x2eb8>
+    110a:	66 0f 1f 44 00 00    	nop    WORD PTR [rax+rax*1+0x0]
+
+0000000000001110 <rand@plt>:
+    1110:	f3 0f 1e fa          	endbr64
+    1114:	ff 25 b6 2e 00 00    	jmp    QWORD PTR [rip+0x2eb6]        # 3fd0 <rand@plt+0x2ec0>
+    111a:	66 0f 1f 44 00 00    	nop    WORD PTR [rax+rax*1+0x0]
+
+Disassembly of section .text:
+
+0000000000001120 <.text>:
+    1120:	f3 0f 1e fa          	endbr64
+    1124:	31 ed                	xor    ebp,ebp
+    1126:	49 89 d1             	mov    r9,rdx
+    1129:	5e                   	pop    rsi
+    112a:	48 89 e2             	mov    rdx,rsp
+    112d:	48 83 e4 f0          	and    rsp,0xfffffffffffffff0
+    1131:	50                   	push   rax
+    1132:	54                   	push   rsp
+    1133:	45 31 c0             	xor    r8d,r8d
+    1136:	31 c9                	xor    ecx,ecx
+    1138:	48 8d 3d a6 06 00 00 	lea    rdi,[rip+0x6a6]        # 17e5 <rand@plt+0x6d5>
+    113f:	ff 15 93 2e 00 00    	call   QWORD PTR [rip+0x2e93]        # 3fd8 <rand@plt+0x2ec8>
+    1145:	f4                   	hlt
+    1146:	66 2e 0f 1f 84 00 00 	cs nop WORD PTR [rax+rax*1+0x0]
+    114d:	00 00 00 
+    1150:	48 8d 3d c1 2e 00 00 	lea    rdi,[rip+0x2ec1]        # 4018 <rand@plt+0x2f08>
+    1157:	48 8d 05 ba 2e 00 00 	lea    rax,[rip+0x2eba]        # 4018 <rand@plt+0x2f08>
+    115e:	48 39 f8             	cmp    rax,rdi
+    1161:	74 15                	je     1178 <rand@plt+0x68>
+    1163:	48 8b 05 76 2e 00 00 	mov    rax,QWORD PTR [rip+0x2e76]        # 3fe0 <rand@plt+0x2ed0>
+    116a:	48 85 c0             	test   rax,rax
+    116d:	74 09                	je     1178 <rand@plt+0x68>
+    116f:	ff e0                	jmp    rax
+    1171:	0f 1f 80 00 00 00 00 	nop    DWORD PTR [rax+0x0]
+    1178:	c3                   	ret
+    1179:	0f 1f 80 00 00 00 00 	nop    DWORD PTR [rax+0x0]
+    1180:	48 8d 3d 91 2e 00 00 	lea    rdi,[rip+0x2e91]        # 4018 <rand@plt+0x2f08>
+    1187:	48 8d 35 8a 2e 00 00 	lea    rsi,[rip+0x2e8a]        # 4018 <rand@plt+0x2f08>
+    118e:	48 29 fe             	sub    rsi,rdi
+    1191:	48 89 f0             	mov    rax,rsi
+    1194:	48 c1 ee 3f          	shr    rsi,0x3f
+    1198:	48 c1 f8 03          	sar    rax,0x3
+    119c:	48 01 c6             	add    rsi,rax
+    119f:	48 d1 fe             	sar    rsi,1
+    11a2:	74 14                	je     11b8 <rand@plt+0xa8>
+    11a4:	48 8b 05 45 2e 00 00 	mov    rax,QWORD PTR [rip+0x2e45]        # 3ff0 <rand@plt+0x2ee0>
+    11ab:	48 85 c0             	test   rax,rax
+    11ae:	74 08                	je     11b8 <rand@plt+0xa8>
+    11b0:	ff e0                	jmp    rax
+    11b2:	66 0f 1f 44 00 00    	nop    WORD PTR [rax+rax*1+0x0]
+    11b8:	c3                   	ret
+    11b9:	0f 1f 80 00 00 00 00 	nop    DWORD PTR [rax+0x0]
+    11c0:	f3 0f 1e fa          	endbr64
+    11c4:	80 3d 55 2e 00 00 00 	cmp    BYTE PTR [rip+0x2e55],0x0        # 4020 <rand@plt+0x2f10>
+    11cb:	75 2b                	jne    11f8 <rand@plt+0xe8>
+    11cd:	55                   	push   rbp // this one doesnt seem to be a function call
+    11ce:	48 83 3d 22 2e 00 00 	cmp    QWORD PTR [rip+0x2e22],0x0        # 3ff8 <rand@plt+0x2ee8>
+    11d5:	00 
+    11d6:	48 89 e5             	mov    rbp,rsp
+    11d9:	74 0c                	je     11e7 <rand@plt+0xd7>
+    11db:	48 8b 3d 26 2e 00 00 	mov    rdi,QWORD PTR [rip+0x2e26]        # 4008 <rand@plt+0x2ef8>
+    11e2:	e8 b9 fe ff ff       	call   10a0 <__cxa_finalize@plt>
+    11e7:	e8 64 ff ff ff       	call   1150 <rand@plt+0x40>
+    11ec:	c6 05 2d 2e 00 00 01 	mov    BYTE PTR [rip+0x2e2d],0x1        # 4020 <rand@plt+0x2f10>
+    11f3:	5d                   	pop    rbp
+    11f4:	c3                   	ret
+    11f5:	0f 1f 00             	nop    DWORD PTR [rax]
+    11f8:	c3                   	ret
+    11f9:	0f 1f 80 00 00 00 00 	nop    DWORD PTR [rax+0x0]
+    1200:	f3 0f 1e fa          	endbr64
+    1204:	e9 77 ff ff ff       	jmp    1180 <rand@plt+0x70>
+    1209:	f3 0f 1e fa          	endbr64
+
+    120d:	55                   	push   rbp
+    120e:	48 89 e5             	mov    rbp,rsp
+    1211:	ba 0d 00 00 00       	mov    edx,0xd
+    1216:	48 8d 05 e7 0d 00 00 	lea    rax,[rip+0xde7]        # 2004 <rand@plt+0xef4>
+    121d:	48 89 c6             	mov    rsi,rax
+    1220:	bf 01 00 00 00       	mov    edi,0x1
+    1225:	e8 86 fe ff ff       	call   10b0 <write@plt>
+    122a:	bf 01 00 00 00       	mov    edi,0x1
+    122f:	e8 cc fe ff ff       	call   1100 <exit@plt>
+    1234:	f3 0f 1e fa          	endbr64
+    
+    1238:	55                   	push   rbp
+    1239:	48 89 e5             	mov    rbp,rsp
+    123c:	48 8d 05 cf 0d 00 00 	lea    rax,[rip+0xdcf]        # 2012 <rand@plt+0xf02>
+    1243:	48 89 c7             	mov    rdi,rax
+    1246:	e8 75 fe ff ff       	call   10c0 <system@plt>
+    124b:	90                   	nop
+    124c:	5d                   	pop    rbp
+    124d:	c3                   	ret
+    124e:	f3 0f 1e fa          	endbr64
+    
+    1252:	55                   	push   rbp
+    1253:	48 89 e5             	mov    rbp,rsp
+    1256:	48 83 ec 10          	sub    rsp,0x10
+    125a:	0f b6 05 e8 2d 00 00 	movzx  eax,BYTE PTR [rip+0x2de8]        # 4049 <rand@plt+0x2f39>
+    1261:	3c 77                	cmp    al,0x77
+    1263:	75 6c                	jne    12d1 <rand@plt+0x1c1>
+    1265:	0f b6 05 de 2d 00 00 	movzx  eax,BYTE PTR [rip+0x2dde]        # 404a <rand@plt+0x2f3a>
+    126c:	84 c0                	test   al,al
+    126e:	74 42                	je     12b2 <rand@plt+0x1a2>
+    1270:	0f b6 05 d3 2d 00 00 	movzx  eax,BYTE PTR [rip+0x2dd3]        # 404a <rand@plt+0x2f3a>
+    1277:	0f b6 c0             	movzx  eax,al
+    127a:	8d 50 ff             	lea    edx,[rax-0x1]
+    127d:	0f b6 05 c7 2d 00 00 	movzx  eax,BYTE PTR [rip+0x2dc7]        # 404b <rand@plt+0x2f3b>
+    1284:	0f b6 c0             	movzx  eax,al
+    1287:	48 63 c8             	movsxd rcx,eax
+    128a:	48 63 d2             	movsxd rdx,edx
+    128d:	48 89 d0             	mov    rax,rdx
+    1290:	48 c1 e0 02          	shl    rax,0x2
+    1294:	48 01 d0             	add    rax,rdx
+    1297:	48 8d 14 08          	lea    rdx,[rax+rcx*1]
+    129b:	48 8d 05 8e 2d 00 00 	lea    rax,[rip+0x2d8e]        # 4030 <rand@plt+0x2f20>
+    12a2:	48 01 d0             	add    rax,rdx
+    12a5:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    12a8:	0f b6 c0             	movzx  eax,al
+    12ab:	83 e0 3f             	and    eax,0x3f
+    12ae:	85 c0                	test   eax,eax
+    12b0:	74 0a                	je     12bc <rand@plt+0x1ac>
+    12b2:	b8 00 00 00 00       	mov    eax,0x0
+    12b7:	e8 4d ff ff ff       	call   1209 <rand@plt+0xf9>
+    12bc:	0f b6 05 87 2d 00 00 	movzx  eax,BYTE PTR [rip+0x2d87]        # 404a <rand@plt+0x2f3a>
+    12c3:	83 e8 01             	sub    eax,0x1
+    12c6:	88 05 7e 2d 00 00    	mov    BYTE PTR [rip+0x2d7e],al        # 404a <rand@plt+0x2f3a>
+    12cc:	e9 5d 01 00 00       	jmp    142e <rand@plt+0x31e>
+    12d1:	0f b6 05 71 2d 00 00 	movzx  eax,BYTE PTR [rip+0x2d71]        # 4049 <rand@plt+0x2f39>
+    12d8:	3c 73                	cmp    al,0x73
+    12da:	75 6c                	jne    1348 <rand@plt+0x238>
+    12dc:	0f b6 05 67 2d 00 00 	movzx  eax,BYTE PTR [rip+0x2d67]        # 404a <rand@plt+0x2f3a>
+    12e3:	3c 04                	cmp    al,0x4
+    12e5:	74 42                	je     1329 <rand@plt+0x219>
+    12e7:	0f b6 05 5c 2d 00 00 	movzx  eax,BYTE PTR [rip+0x2d5c]        # 404a <rand@plt+0x2f3a>
+    12ee:	0f b6 c0             	movzx  eax,al
+    12f1:	8d 50 01             	lea    edx,[rax+0x1]
+    12f4:	0f b6 05 50 2d 00 00 	movzx  eax,BYTE PTR [rip+0x2d50]        # 404b <rand@plt+0x2f3b>
+    12fb:	0f b6 c0             	movzx  eax,al
+    12fe:	48 63 c8             	movsxd rcx,eax
+    1301:	48 63 d2             	movsxd rdx,edx
+    1304:	48 89 d0             	mov    rax,rdx
+    1307:	48 c1 e0 02          	shl    rax,0x2
+    130b:	48 01 d0             	add    rax,rdx
+    130e:	48 8d 14 08          	lea    rdx,[rax+rcx*1]
+    1312:	48 8d 05 17 2d 00 00 	lea    rax,[rip+0x2d17]        # 4030 <rand@plt+0x2f20>
+    1319:	48 01 d0             	add    rax,rdx
+    131c:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    131f:	0f b6 c0             	movzx  eax,al
+    1322:	83 e0 3f             	and    eax,0x3f
+    1325:	85 c0                	test   eax,eax
+    1327:	74 0a                	je     1333 <rand@plt+0x223>
+    1329:	b8 00 00 00 00       	mov    eax,0x0
+    132e:	e8 d6 fe ff ff       	call   1209 <rand@plt+0xf9>
+    1333:	0f b6 05 10 2d 00 00 	movzx  eax,BYTE PTR [rip+0x2d10]        # 404a <rand@plt+0x2f3a>
+    133a:	83 c0 01             	add    eax,0x1
+    133d:	88 05 07 2d 00 00    	mov    BYTE PTR [rip+0x2d07],al        # 404a <rand@plt+0x2f3a>
+    1343:	e9 e6 00 00 00       	jmp    142e <rand@plt+0x31e>
+    1348:	0f b6 05 fa 2c 00 00 	movzx  eax,BYTE PTR [rip+0x2cfa]        # 4049 <rand@plt+0x2f39>
+    134f:	3c 61                	cmp    al,0x61
+    1351:	75 69                	jne    13bc <rand@plt+0x2ac>
+    1353:	0f b6 05 f1 2c 00 00 	movzx  eax,BYTE PTR [rip+0x2cf1]        # 404b <rand@plt+0x2f3b>
+    135a:	84 c0                	test   al,al
+    135c:	74 42                	je     13a0 <rand@plt+0x290>
+    135e:	0f b6 05 e5 2c 00 00 	movzx  eax,BYTE PTR [rip+0x2ce5]        # 404a <rand@plt+0x2f3a>
+    1365:	0f b6 c0             	movzx  eax,al
+    1368:	0f b6 15 dc 2c 00 00 	movzx  edx,BYTE PTR [rip+0x2cdc]        # 404b <rand@plt+0x2f3b>
+    136f:	0f b6 d2             	movzx  edx,dl
+    1372:	83 ea 01             	sub    edx,0x1
+    1375:	48 63 ca             	movsxd rcx,edx
+    1378:	48 63 d0             	movsxd rdx,eax
+    137b:	48 89 d0             	mov    rax,rdx
+    137e:	48 c1 e0 02          	shl    rax,0x2
+    1382:	48 01 d0             	add    rax,rdx
+    1385:	48 8d 14 08          	lea    rdx,[rax+rcx*1]
+    1389:	48 8d 05 a0 2c 00 00 	lea    rax,[rip+0x2ca0]        # 4030 <rand@plt+0x2f20>
+    1390:	48 01 d0             	add    rax,rdx
+    1393:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1396:	0f b6 c0             	movzx  eax,al
+    1399:	83 e0 3f             	and    eax,0x3f
+    139c:	85 c0                	test   eax,eax
+    139e:	74 0a                	je     13aa <rand@plt+0x29a>
+    13a0:	b8 00 00 00 00       	mov    eax,0x0
+    13a5:	e8 5f fe ff ff       	call   1209 <rand@plt+0xf9>
+    13aa:	0f b6 05 9a 2c 00 00 	movzx  eax,BYTE PTR [rip+0x2c9a]        # 404b <rand@plt+0x2f3b>
+    13b1:	83 e8 01             	sub    eax,0x1
+    13b4:	88 05 91 2c 00 00    	mov    BYTE PTR [rip+0x2c91],al        # 404b <rand@plt+0x2f3b>
+    13ba:	eb 72                	jmp    142e <rand@plt+0x31e>
+    13bc:	0f b6 05 86 2c 00 00 	movzx  eax,BYTE PTR [rip+0x2c86]        # 4049 <rand@plt+0x2f39>
+    13c3:	3c 64                	cmp    al,0x64
+    13c5:	75 67                	jne    142e <rand@plt+0x31e>
+    13c7:	0f b6 05 7d 2c 00 00 	movzx  eax,BYTE PTR [rip+0x2c7d]        # 404b <rand@plt+0x2f3b>
+    13ce:	3c 04                	cmp    al,0x4
+    13d0:	74 42                	je     1414 <rand@plt+0x304>
+    13d2:	0f b6 05 71 2c 00 00 	movzx  eax,BYTE PTR [rip+0x2c71]        # 404a <rand@plt+0x2f3a>
+    13d9:	0f b6 c0             	movzx  eax,al
+    13dc:	0f b6 15 68 2c 00 00 	movzx  edx,BYTE PTR [rip+0x2c68]        # 404b <rand@plt+0x2f3b>
+    13e3:	0f b6 d2             	movzx  edx,dl
+    13e6:	83 c2 01             	add    edx,0x1
+    13e9:	48 63 ca             	movsxd rcx,edx
+    13ec:	48 63 d0             	movsxd rdx,eax
+    13ef:	48 89 d0             	mov    rax,rdx
+    13f2:	48 c1 e0 02          	shl    rax,0x2
+    13f6:	48 01 d0             	add    rax,rdx
+    13f9:	48 8d 14 08          	lea    rdx,[rax+rcx*1]
+    13fd:	48 8d 05 2c 2c 00 00 	lea    rax,[rip+0x2c2c]        # 4030 <rand@plt+0x2f20>
+    1404:	48 01 d0             	add    rax,rdx
+    1407:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    140a:	0f b6 c0             	movzx  eax,al
+    140d:	83 e0 3f             	and    eax,0x3f
+    1410:	85 c0                	test   eax,eax
+    1412:	74 0a                	je     141e <rand@plt+0x30e>
+    1414:	b8 00 00 00 00       	mov    eax,0x0
+    1419:	e8 eb fd ff ff       	call   1209 <rand@plt+0xf9>
+    141e:	0f b6 05 26 2c 00 00 	movzx  eax,BYTE PTR [rip+0x2c26]        # 404b <rand@plt+0x2f3b>
+    1425:	83 c0 01             	add    eax,0x1
+    1428:	88 05 1d 2c 00 00    	mov    BYTE PTR [rip+0x2c1d],al        # 404b <rand@plt+0x2f3b>
+    142e:	0f b6 05 15 2c 00 00 	movzx  eax,BYTE PTR [rip+0x2c15]        # 404a <rand@plt+0x2f3a>
+    1435:	0f b6 c0             	movzx  eax,al
+    1438:	0f b6 15 0c 2c 00 00 	movzx  edx,BYTE PTR [rip+0x2c0c]        # 404b <rand@plt+0x2f3b>
+    143f:	0f b6 d2             	movzx  edx,dl
+    1442:	48 63 ca             	movsxd rcx,edx
+    1445:	48 63 d0             	movsxd rdx,eax
+    1448:	48 89 d0             	mov    rax,rdx
+    144b:	48 c1 e0 02          	shl    rax,0x2
+    144f:	48 01 d0             	add    rax,rdx
+    1452:	48 8d 14 08          	lea    rdx,[rax+rcx*1]
+    1456:	48 8d 05 d3 2b 00 00 	lea    rax,[rip+0x2bd3]        # 4030 <rand@plt+0x2f20>
+    145d:	48 01 d0             	add    rax,rdx
+    1460:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1463:	3c 40                	cmp    al,0x40
+    1465:	75 20                	jne    1487 <rand@plt+0x377>
+    1467:	0f b6 05 de 2b 00 00 	movzx  eax,BYTE PTR [rip+0x2bde]        # 404c <rand@plt+0x2f3c>
+    146e:	83 e8 01             	sub    eax,0x1
+    1471:	88 05 d5 2b 00 00    	mov    BYTE PTR [rip+0x2bd5],al        # 404c <rand@plt+0x2f3c>
+    1477:	0f b6 05 92 2b 00 00 	movzx  eax,BYTE PTR [rip+0x2b92]        # 4010 <rand@plt+0x2f00>
+    147e:	83 c0 01             	add    eax,0x1
+    1481:	88 05 89 2b 00 00    	mov    BYTE PTR [rip+0x2b89],al        # 4010 <rand@plt+0x2f00>
+    1487:	0f b6 0d 82 2b 00 00 	movzx  ecx,BYTE PTR [rip+0x2b82]        # 4010 <rand@plt+0x2f00>
+    148e:	0f b6 05 b5 2b 00 00 	movzx  eax,BYTE PTR [rip+0x2bb5]        # 404a <rand@plt+0x2f3a>
+    1495:	0f b6 c0             	movzx  eax,al
+    1498:	0f b6 15 ac 2b 00 00 	movzx  edx,BYTE PTR [rip+0x2bac]        # 404b <rand@plt+0x2f3b>
+    149f:	0f b6 d2             	movzx  edx,dl
+    14a2:	83 c1 01             	add    ecx,0x1
+    14a5:	48 63 f2             	movsxd rsi,edx
+    14a8:	48 63 d0             	movsxd rdx,eax
+    14ab:	48 89 d0             	mov    rax,rdx
+    14ae:	48 c1 e0 02          	shl    rax,0x2
+    14b2:	48 01 d0             	add    rax,rdx
+    14b5:	48 8d 14 30          	lea    rdx,[rax+rsi*1]
+    14b9:	48 8d 05 70 2b 00 00 	lea    rax,[rip+0x2b70]        # 4030 <rand@plt+0x2f20>
+    14c0:	48 01 d0             	add    rax,rdx
+    14c3:	88 08                	mov    BYTE PTR [rax],cl
+    14c5:	0f b6 05 44 2b 00 00 	movzx  eax,BYTE PTR [rip+0x2b44]        # 4010 <rand@plt+0x2f00>
+    14cc:	3c 19                	cmp    al,0x19
+    14ce:	75 23                	jne    14f3 <rand@plt+0x3e3>
+    14d0:	ba 09 00 00 00       	mov    edx,0x9
+    14d5:	48 8d 05 3c 0b 00 00 	lea    rax,[rip+0xb3c]        # 2018 <rand@plt+0xf08>
+    14dc:	48 89 c6             	mov    rsi,rax
+    14df:	bf 01 00 00 00       	mov    edi,0x1
+    14e4:	e8 c7 fb ff ff       	call   10b0 <write@plt>
+    14e9:	bf 00 00 00 00       	mov    edi,0x0
+    14ee:	e8 0d fc ff ff       	call   1100 <exit@plt>
+    14f3:	e8 18 fc ff ff       	call   1110 <rand@plt>
+    14f8:	0f b6 15 4d 2b 00 00 	movzx  edx,BYTE PTR [rip+0x2b4d]        # 404c <rand@plt+0x2f3c>
+    14ff:	0f b6 d2             	movzx  edx,dl
+    1502:	b9 19 00 00 00       	mov    ecx,0x19
+    1507:	29 d1                	sub    ecx,edx
+    1509:	0f b6 15 00 2b 00 00 	movzx  edx,BYTE PTR [rip+0x2b00]        # 4010 <rand@plt+0x2f00>
+    1510:	0f b6 d2             	movzx  edx,dl
+    1513:	29 d1                	sub    ecx,edx
+    1515:	8d 79 01             	lea    edi,[rcx+0x1]
+    1518:	99                   	cdq
+    1519:	f7 ff                	idiv   edi
+    151b:	89 d1                	mov    ecx,edx
+    151d:	89 c8                	mov    eax,ecx
+    151f:	88 45 ff             	mov    BYTE PTR [rbp-0x1],al
+    1522:	c6 45 fc 00          	mov    BYTE PTR [rbp-0x4],0x0
+    1526:	c6 45 fd 00          	mov    BYTE PTR [rbp-0x3],0x0
+    152a:	e9 00 01 00 00       	jmp    162f <rand@plt+0x51f>
+    152f:	c6 45 fe 00          	mov    BYTE PTR [rbp-0x2],0x0
+    1533:	e9 e3 00 00 00       	jmp    161b <rand@plt+0x50b>
+    1538:	0f b6 45 fd          	movzx  eax,BYTE PTR [rbp-0x3]
+    153c:	0f b6 55 fe          	movzx  edx,BYTE PTR [rbp-0x2]
+    1540:	48 63 ca             	movsxd rcx,edx
+    1543:	48 63 d0             	movsxd rdx,eax
+    1546:	48 89 d0             	mov    rax,rdx
+    1549:	48 c1 e0 02          	shl    rax,0x2
+    154d:	48 01 d0             	add    rax,rdx
+    1550:	48 8d 14 08          	lea    rdx,[rax+rcx*1]
+    1554:	48 8d 05 d5 2a 00 00 	lea    rax,[rip+0x2ad5]        # 4030 <rand@plt+0x2f20>
+    155b:	48 01 d0             	add    rax,rdx
+    155e:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1561:	0f b6 c0             	movzx  eax,al
+    1564:	83 e0 3f             	and    eax,0x3f
+    1567:	85 c0                	test   eax,eax
+    1569:	74 4f                	je     15ba <rand@plt+0x4aa>
+    156b:	0f b6 55 fd          	movzx  edx,BYTE PTR [rbp-0x3]
+    156f:	0f b6 4d fe          	movzx  ecx,BYTE PTR [rbp-0x2]
+    1573:	48 63 f9             	movsxd rdi,ecx
+    1576:	48 63 f2             	movsxd rsi,edx
+    1579:	48 89 f0             	mov    rax,rsi
+    157c:	48 c1 e0 02          	shl    rax,0x2
+    1580:	48 01 f0             	add    rax,rsi
+    1583:	48 8d 34 38          	lea    rsi,[rax+rdi*1]
+    1587:	48 8d 05 a2 2a 00 00 	lea    rax,[rip+0x2aa2]        # 4030 <rand@plt+0x2f20>
+    158e:	48 01 f0             	add    rax,rsi
+    1591:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    1594:	8d 70 ff             	lea    esi,[rax-0x1]
+    1597:	48 63 c9             	movsxd rcx,ecx
+    159a:	48 63 d2             	movsxd rdx,edx
+    159d:	48 89 d0             	mov    rax,rdx
+    15a0:	48 c1 e0 02          	shl    rax,0x2
+    15a4:	48 01 d0             	add    rax,rdx
+    15a7:	48 8d 14 08          	lea    rdx,[rax+rcx*1]
+    15ab:	48 8d 05 7e 2a 00 00 	lea    rax,[rip+0x2a7e]        # 4030 <rand@plt+0x2f20>
+    15b2:	48 01 d0             	add    rax,rdx
+    15b5:	40 88 30             	mov    BYTE PTR [rax],sil
+    15b8:	eb 4d                	jmp    1607 <rand@plt+0x4f7>
+    15ba:	0f b6 45 fc          	movzx  eax,BYTE PTR [rbp-0x4]
+    15be:	3a 45 ff             	cmp    al,BYTE PTR [rbp-0x1]
+    15c1:	75 44                	jne    1607 <rand@plt+0x4f7>
+    15c3:	0f b6 05 82 2a 00 00 	movzx  eax,BYTE PTR [rip+0x2a82]        # 404c <rand@plt+0x2f3c>
+    15ca:	3c 01                	cmp    al,0x1
+    15cc:	77 39                	ja     1607 <rand@plt+0x4f7>
+    15ce:	0f b6 05 77 2a 00 00 	movzx  eax,BYTE PTR [rip+0x2a77]        # 404c <rand@plt+0x2f3c>
+    15d5:	83 c0 01             	add    eax,0x1
+    15d8:	88 05 6e 2a 00 00    	mov    BYTE PTR [rip+0x2a6e],al        # 404c <rand@plt+0x2f3c>
+    15de:	0f b6 45 fd          	movzx  eax,BYTE PTR [rbp-0x3]
+    15e2:	0f b6 55 fe          	movzx  edx,BYTE PTR [rbp-0x2]
+    15e6:	48 63 ca             	movsxd rcx,edx
+    15e9:	48 63 d0             	movsxd rdx,eax
+    15ec:	48 89 d0             	mov    rax,rdx
+    15ef:	48 c1 e0 02          	shl    rax,0x2
+    15f3:	48 01 d0             	add    rax,rdx
+    15f6:	48 8d 14 08          	lea    rdx,[rax+rcx*1]
+    15fa:	48 8d 05 2f 2a 00 00 	lea    rax,[rip+0x2a2f]        # 4030 <rand@plt+0x2f20>
+    1601:	48 01 d0             	add    rax,rdx
+    1604:	c6 00 40             	mov    BYTE PTR [rax],0x40
+    1607:	0f b6 45 fc          	movzx  eax,BYTE PTR [rbp-0x4]
+    160b:	83 c0 01             	add    eax,0x1
+    160e:	88 45 fc             	mov    BYTE PTR [rbp-0x4],al
+    1611:	0f b6 45 fe          	movzx  eax,BYTE PTR [rbp-0x2]
+    1615:	83 c0 01             	add    eax,0x1
+    1618:	88 45 fe             	mov    BYTE PTR [rbp-0x2],al
+    161b:	80 7d fe 04          	cmp    BYTE PTR [rbp-0x2],0x4
+    161f:	0f 86 13 ff ff ff    	jbe    1538 <rand@plt+0x428>
+    1625:	0f b6 45 fd          	movzx  eax,BYTE PTR [rbp-0x3]
+    1629:	83 c0 01             	add    eax,0x1
+    162c:	88 45 fd             	mov    BYTE PTR [rbp-0x3],al
+    162f:	80 7d fd 04          	cmp    BYTE PTR [rbp-0x3],0x4
+    1633:	0f 86 f6 fe ff ff    	jbe    152f <rand@plt+0x41f>
+    1639:	90                   	nop
+    163a:	90                   	nop
+    163b:	c9                   	leave
+    163c:	c3                   	ret
+    163d:	f3 0f 1e fa          	endbr64
+    
+    1641:	55                   	push   rbp
+    1642:	48 89 e5             	mov    rbp,rsp
+    1645:	48 83 ec 10          	sub    rsp,0x10
+    1649:	ba 0f 00 00 00       	mov    edx,0xf
+    164e:	48 8d 05 cd 09 00 00 	lea    rax,[rip+0x9cd]        # 2022 <rand@plt+0xf12>
+    1655:	48 89 c6             	mov    rsi,rax
+    1658:	bf 01 00 00 00       	mov    edi,0x1
+    165d:	e8 4e fa ff ff       	call   10b0 <write@plt>
+    1662:	c7 45 f8 00 00 00 00 	mov    DWORD PTR [rbp-0x8],0x0
+    1669:	e9 69 01 00 00       	jmp    17d7 <rand@plt+0x6c7>
+    166e:	c7 45 fc 00 00 00 00 	mov    DWORD PTR [rbp-0x4],0x0
+    1675:	e9 36 01 00 00       	jmp    17b0 <rand@plt+0x6a0>
+    167a:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+    167d:	48 63 c8             	movsxd rcx,eax
+    1680:	8b 45 f8             	mov    eax,DWORD PTR [rbp-0x8]
+    1683:	48 63 d0             	movsxd rdx,eax
+    1686:	48 89 d0             	mov    rax,rdx
+    1689:	48 c1 e0 02          	shl    rax,0x2
+    168d:	48 01 d0             	add    rax,rdx
+    1690:	48 8d 14 08          	lea    rdx,[rax+rcx*1]
+    1694:	48 8d 05 95 29 00 00 	lea    rax,[rip+0x2995]        # 4030 <rand@plt+0x2f20>
+    169b:	48 01 d0             	add    rax,rdx
+    169e:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    16a1:	0f b6 c0             	movzx  eax,al
+    16a4:	83 e0 40             	and    eax,0x40
+    16a7:	85 c0                	test   eax,eax
+    16a9:	74 1e                	je     16c9 <rand@plt+0x5b9>
+    16ab:	ba 03 00 00 00       	mov    edx,0x3
+    16b0:	48 8d 05 7b 09 00 00 	lea    rax,[rip+0x97b]        # 2032 <rand@plt+0xf22>
+    16b7:	48 89 c6             	mov    rsi,rax
+    16ba:	bf 01 00 00 00       	mov    edi,0x1
+    16bf:	e8 ec f9 ff ff       	call   10b0 <write@plt>
+    16c4:	e9 e3 00 00 00       	jmp    17ac <rand@plt+0x69c>
+    16c9:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+    16cc:	48 63 c8             	movsxd rcx,eax
+    16cf:	8b 45 f8             	mov    eax,DWORD PTR [rbp-0x8]
+    16d2:	48 63 d0             	movsxd rdx,eax
+    16d5:	48 89 d0             	mov    rax,rdx
+    16d8:	48 c1 e0 02          	shl    rax,0x2
+    16dc:	48 01 d0             	add    rax,rdx
+    16df:	48 8d 14 08          	lea    rdx,[rax+rcx*1]
+    16e3:	48 8d 05 46 29 00 00 	lea    rax,[rip+0x2946]        # 4030 <rand@plt+0x2f20>
+    16ea:	48 01 d0             	add    rax,rdx
+    16ed:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    16f0:	0f b6 c0             	movzx  eax,al
+    16f3:	83 e0 3f             	and    eax,0x3f
+    16f6:	85 c0                	test   eax,eax
+    16f8:	74 4d                	je     1747 <rand@plt+0x637>
+    16fa:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+    16fd:	48 63 c8             	movsxd rcx,eax
+    1700:	8b 45 f8             	mov    eax,DWORD PTR [rbp-0x8]
+    1703:	48 63 d0             	movsxd rdx,eax
+    1706:	48 89 d0             	mov    rax,rdx
+    1709:	48 c1 e0 02          	shl    rax,0x2
+    170d:	48 01 d0             	add    rax,rdx
+    1710:	48 8d 14 08          	lea    rdx,[rax+rcx*1]
+    1714:	48 8d 05 15 29 00 00 	lea    rax,[rip+0x2915]        # 4030 <rand@plt+0x2f20>
+    171b:	48 01 d0             	add    rax,rdx
+    171e:	0f b6 10             	movzx  edx,BYTE PTR [rax]
+    1721:	0f b6 05 e8 28 00 00 	movzx  eax,BYTE PTR [rip+0x28e8]        # 4010 <rand@plt+0x2f00>
+    1728:	38 c2                	cmp    dl,al
+    172a:	75 1b                	jne    1747 <rand@plt+0x637>
+    172c:	ba 03 00 00 00       	mov    edx,0x3
+    1731:	48 8d 05 fe 08 00 00 	lea    rax,[rip+0x8fe]        # 2036 <rand@plt+0xf26>
+    1738:	48 89 c6             	mov    rsi,rax
+    173b:	bf 01 00 00 00       	mov    edi,0x1
+    1740:	e8 6b f9 ff ff       	call   10b0 <write@plt>
+    1745:	eb 65                	jmp    17ac <rand@plt+0x69c>
+    1747:	8b 45 fc             	mov    eax,DWORD PTR [rbp-0x4]
+    174a:	48 63 c8             	movsxd rcx,eax
+    174d:	8b 45 f8             	mov    eax,DWORD PTR [rbp-0x8]
+    1750:	48 63 d0             	movsxd rdx,eax
+    1753:	48 89 d0             	mov    rax,rdx
+    1756:	48 c1 e0 02          	shl    rax,0x2
+    175a:	48 01 d0             	add    rax,rdx
+    175d:	48 8d 14 08          	lea    rdx,[rax+rcx*1]
+    1761:	48 8d 05 c8 28 00 00 	lea    rax,[rip+0x28c8]        # 4030 <rand@plt+0x2f20>
+    1768:	48 01 d0             	add    rax,rdx
+    176b:	0f b6 00             	movzx  eax,BYTE PTR [rax]
+    176e:	0f b6 c0             	movzx  eax,al
+    1771:	83 e0 3f             	and    eax,0x3f
+    1774:	85 c0                	test   eax,eax
+    1776:	74 1b                	je     1793 <rand@plt+0x683>
+    1778:	ba 03 00 00 00       	mov    edx,0x3
+    177d:	48 8d 05 b6 08 00 00 	lea    rax,[rip+0x8b6]        # 203a <rand@plt+0xf2a>
+    1784:	48 89 c6             	mov    rsi,rax
+    1787:	bf 01 00 00 00       	mov    edi,0x1
+    178c:	e8 1f f9 ff ff       	call   10b0 <write@plt>
+    1791:	eb 19                	jmp    17ac <rand@plt+0x69c>
+    1793:	ba 03 00 00 00       	mov    edx,0x3
+    1798:	48 8d 05 9f 08 00 00 	lea    rax,[rip+0x89f]        # 203e <rand@plt+0xf2e>
+    179f:	48 89 c6             	mov    rsi,rax
+    17a2:	bf 01 00 00 00       	mov    edi,0x1
+    17a7:	e8 04 f9 ff ff       	call   10b0 <write@plt>
+    17ac:	83 45 fc 01          	add    DWORD PTR [rbp-0x4],0x1
+    17b0:	83 7d fc 04          	cmp    DWORD PTR [rbp-0x4],0x4
+    17b4:	0f 8e c0 fe ff ff    	jle    167a <rand@plt+0x56a>
+    17ba:	ba 01 00 00 00       	mov    edx,0x1
+    17bf:	48 8d 05 7c 08 00 00 	lea    rax,[rip+0x87c]        # 2042 <rand@plt+0xf32>
+    17c6:	48 89 c6             	mov    rsi,rax
+    17c9:	bf 01 00 00 00       	mov    edi,0x1
+    17ce:	e8 dd f8 ff ff       	call   10b0 <write@plt>
+    17d3:	83 45 f8 01          	add    DWORD PTR [rbp-0x8],0x1
+    17d7:	83 7d f8 04          	cmp    DWORD PTR [rbp-0x8],0x4
+    17db:	0f 8e 8d fe ff ff    	jle    166e <rand@plt+0x55e>
+    17e1:	90                   	nop
+    17e2:	90                   	nop
+    17e3:	c9                   	leave
+    17e4:	c3                   	ret
+    17e5:	f3 0f 1e fa          	endbr64
+    
+    17e9:	55                   	push   rbp
+    17ea:	48 89 e5             	mov    rbp,rsp
+    17ed:	48 83 ec 10          	sub    rsp,0x10
+    17f1:	bf 00 00 00 00       	mov    edi,0x0
+    17f6:	e8 f5 f8 ff ff       	call   10f0 <time@plt>
+    17fb:	89 c7                	mov    edi,eax
+    17fd:	e8 de f8 ff ff       	call   10e0 <srand@plt>
+    1802:	c6 05 27 28 00 00 01 	mov    BYTE PTR [rip+0x2827],0x1        # 4030 <rand@plt+0x2f20>
+    1809:	b8 00 00 00 00       	mov    eax,0x0
+    180e:	e8 21 fa ff ff       	call   1234 <rand@plt+0x124>
+    1813:	b8 00 00 00 00       	mov    eax,0x0
+    1818:	e8 20 fe ff ff       	call   163d <rand@plt+0x52d>
+    181d:	ba 01 00 00 00       	mov    edx,0x1
+    1822:	48 8d 05 20 28 00 00 	lea    rax,[rip+0x2820]        # 4049 <rand@plt+0x2f39>
+    1829:	48 89 c6             	mov    rsi,rax
+    182c:	bf 00 00 00 00       	mov    edi,0x0
+    1831:	e8 9a f8 ff ff       	call   10d0 <read@plt>
+    1836:	89 45 fc             	mov    DWORD PTR [rbp-0x4],eax
+    1839:	83 7d fc 01          	cmp    DWORD PTR [rbp-0x4],0x1
+    183d:	75 4c                	jne    188b <rand@plt+0x77b>
+    183f:	0f b6 05 03 28 00 00 	movzx  eax,BYTE PTR [rip+0x2803]        # 4049 <rand@plt+0x2f39>
+    1846:	3c 64                	cmp    al,0x64
+    1848:	74 21                	je     186b <rand@plt+0x75b>
+    184a:	0f b6 05 f8 27 00 00 	movzx  eax,BYTE PTR [rip+0x27f8]        # 4049 <rand@plt+0x2f39>
+    1851:	3c 73                	cmp    al,0x73
+    1853:	74 16                	je     186b <rand@plt+0x75b>
+    1855:	0f b6 05 ed 27 00 00 	movzx  eax,BYTE PTR [rip+0x27ed]        # 4049 <rand@plt+0x2f39>
+    185c:	3c 61                	cmp    al,0x61
+    185e:	74 0b                	je     186b <rand@plt+0x75b>
+    1860:	0f b6 05 e2 27 00 00 	movzx  eax,BYTE PTR [rip+0x27e2]        # 4049 <rand@plt+0x2f39>
+    1867:	3c 77                	cmp    al,0x77
+    1869:	75 20                	jne    188b <rand@plt+0x77b>
+    186b:	b8 00 00 00 00       	mov    eax,0x0
+    1870:	e8 d9 f9 ff ff       	call   124e <rand@plt+0x13e>
+    1875:	b8 00 00 00 00       	mov    eax,0x0
+    187a:	e8 b5 f9 ff ff       	call   1234 <rand@plt+0x124>
+    187f:	b8 00 00 00 00       	mov    eax,0x0
+    1884:	e8 b4 fd ff ff       	call   163d <rand@plt+0x52d>
+    1889:	eb 92                	jmp    181d <rand@plt+0x70d>
+    188b:	90                   	nop
+    188c:	eb 8f                	jmp    181d <rand@plt+0x70d>
+
+Disassembly of section .fini:
+
+0000000000001890 <.fini>:
+    1890:	f3 0f 1e fa          	endbr64
+    1894:	48 83 ec 08          	sub    rsp,0x8
+    1898:	48 83 c4 08          	add    rsp,0x8
+    189c:	c3                   	ret

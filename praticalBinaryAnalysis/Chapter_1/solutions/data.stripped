@@ -1,0 +1,6 @@
+
+Chapter_1/srcs/snake.stripped.bin:     file format elf64-x86-64
+
+Contents of section .data:
+ 4000 00000000 00000000 08400000 00000000  .........@......
+ 4010 01                                   .               

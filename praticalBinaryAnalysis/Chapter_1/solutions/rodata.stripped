@@ -1,0 +1,9 @@
+
+Chapter_1/srcs/snake.stripped.bin:     file format elf64-x86-64
+
+Contents of section .rodata:
+ 2000 01000200 47414d45 204f5645 52203a28  ....GAME OVER :(
+ 2010 0a00636c 65617200 594f5520 574f4e21  ..clear.YOU WON!
+ 2020 0a002d2d 2d2d2d2d 6d61702d 2d2d2d2d  ..------map-----
+ 2030 0a002066 20005b3a 29005b53 5d00202e  .. f .[:).[S]. .
+ 2040 20000a00                              ...            
